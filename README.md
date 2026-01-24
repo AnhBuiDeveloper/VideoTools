@@ -1,16 +1,60 @@
-# React + Vite
+# Video Tools Suite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive video processing toolkit featuring both a modern Web Application and a high-performance Desktop Application.
 
-Currently, two official plugins are available:
+## 1. Desktop Application (Recommended)
+**Path:** `./VideoToolsDesktop`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A native Windows Forms application designed for performance and advanced features. It leverages your system's `ffmpeg` installation to provide GPU acceleration and complex subtitle rendering.
 
-## React Compiler
+### Features
+*   **Hardware Acceleration**: Support for NVIDIA (NVENC), AMD (AMF), and Intel (QSV) encoders.
+*   **Advanced Subtitles**: 
+    *   Hardcode (burn-in) subtitles from `.srt` files.
+    *   **Styling**: Customize Font, Size, Bold, Italic, Underline, Strikeout.
+    *   **Effects**: Adjustable Shadow, Border (Outline), and Transparency (Alpha).
+    *   **Preview**: Real-time visual preview of subtitle styles.
+*   **High Performance**: "Ultrafast" preset enabled by default for rapid conversion.
+*   **Progress Tracking**: Real-time progress bar and detailed FFmpeg logs.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### How to Run
+1.  Ensure [FFmpeg](https://ffmpeg.org/download.html) is installed and added to your System PATH (or place `ffmpeg.exe` in the folder).
+2.  Open a terminal in the `VideoToolsDesktop` folder.
+3.  Run the app:
+    ```powershell
+    dotnet run
+    ```
+    *Or open `VideoToolsDesktop.csproj` in Visual Studio.*
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 2. Web Application
+**Path:** `./` (Root)
+
+A modern React-based interface for client-side video processing using WebAssembly (FFmpeg.wasm).
+
+### Features
+*   **Modern UI**: Sleek Dark Mode interface built with CSS Modules.
+*   **Client-Side Processing**: Converts videos directly in the browser (no data upload required).
+*   **Format Support**: Convert to MKV/MP4 containers.
+*   **Subtitle Integration**: Basic subtitle burning support.
+
+### How to Run
+1.  Install dependencies:
+    ```bash
+    npm install
+    ```
+2.  Start the Development Server:
+    ```bash
+    npm run dev
+    ```
+3.  Open `http://localhost:8001` in your browser.
+
+---
+
+## Technologies
+*   **Desktop**: C# .NET 8.0/10.0, Windows Forms, FFmpeg CLI
+*   **Web**: React, Vite, FFmpeg.wasm
+
+## License
+MIT
