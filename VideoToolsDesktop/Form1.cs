@@ -258,14 +258,61 @@ namespace VideoToolsDesktop
                 args += $"-vf \"subtitles='{subPath}':force_style='{style}'\" ";
             }
 
-            string encoder = "libx264";
-            if (cmbHardware.Text.Contains("NVIDIA")) encoder = "h264_nvenc";
-            else if (cmbHardware.Text.Contains("AMD")) encoder = "h264_amf";
-            else if (cmbHardware.Text.Contains("Intel")) encoder = "h264_qsv";
+            // 1. Audio & Mapping
+            // -c:a copy: Copy audio stream without re-encoding
+            // -map 0:v:0: Select first video stream from input
+            // -map 0:a: Select all audio streams from input
+            args += "-c:a copy -map 0:v:0 -map 0:a ";
 
-            args += $"-c:v {encoder} ";
-            if (chkUltrafast.Checked) args += encoder == "libx264" ? "-preset ultrafast " : "-preset fast ";
+            // 2. Video Encoder & Presets
+            string encoder = "libx264";
             
+            if (cmbHardware.Text.Contains("NVIDIA"))
+            {
+                encoder = "h264_nvenc";
+                args += $"-c:v {encoder} ";
+
+                if (chkUltrafast.Checked)
+                {
+                    // Speed Mode
+                    args += "-preset p1 "; 
+                }
+                else
+                {
+                    // Quality Mode (Constrained VBR Level 3.1)
+                    // P6, VBR HQ, CQ 20, Max 6M, Buf 12M, BF 3, Refs 4
+                    args += "-preset p6 -profile:v high -level 3.1 -rc vbr_hq -cq 20 -maxrate 6000k -bufsize 12000k -bf 3 -refs 4 ";
+                }
+            }
+            else if (cmbHardware.Text.Contains("AMD"))
+            {
+                 encoder = "h264_amf";
+                 args += $"-c:v {encoder} ";
+                 if (chkUltrafast.Checked) args += "-quality speed ";
+                 else args += "-quality balanced ";
+            }
+            else if (cmbHardware.Text.Contains("Intel"))
+            {
+                 encoder = "h264_qsv";
+                 args += $"-c:v {encoder} ";
+                 if (chkUltrafast.Checked) args += "-preset veryfast ";
+                 else args += "-preset medium ";
+            }
+            else // CPU (Software)
+            {
+                 args += "-c:v libx264 ";
+                 if (chkUltrafast.Checked) 
+                 {
+                     args += "-preset ultrafast ";
+                 }
+                 else 
+                 {
+                     // Quality Mode (Refined Request)
+                     // Libx264: slow, crf 21, profile high
+                     args += "-preset slow -crf 21 -profile:v high ";
+                 }
+            }
+
             args += $"\"{outputFile}\" -y";
 
             progressBar.Value = 0;

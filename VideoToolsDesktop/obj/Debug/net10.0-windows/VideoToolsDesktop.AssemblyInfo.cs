@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VideoToolsDesktop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+471f10817842460d172b89700052ab97dd4d86dd")]
 [assembly: System.Reflection.AssemblyProductAttribute("VideoToolsDesktop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VideoToolsDesktop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
