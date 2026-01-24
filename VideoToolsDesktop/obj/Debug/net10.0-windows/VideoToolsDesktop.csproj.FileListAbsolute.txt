@@ -1,0 +1,16 @@
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\bin\Debug\net10.0-windows\VideoToolsDesktop.exe
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\bin\Debug\net10.0-windows\VideoToolsDesktop.deps.json
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\bin\Debug\net10.0-windows\VideoToolsDesktop.runtimeconfig.json
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\bin\Debug\net10.0-windows\VideoToolsDesktop.dll
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\bin\Debug\net10.0-windows\VideoToolsDesktop.pdb
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.GeneratedMSBuildEditorConfig.editorconfig
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.AssemblyInfoInputs.cache
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.AssemblyInfo.cs
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.csproj.CoreCompileInputs.cache
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.dll
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\refint\VideoToolsDesktop.dll
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.pdb
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.genruntimeconfig.cache
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\ref\VideoToolsDesktop.dll
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.Form1.resources
+C:\Source\GitHub\AnhBuiDeveloper\VideoTools\VideoToolsDesktop\obj\Debug\net10.0-windows\VideoToolsDesktop.csproj.GenerateResource.cache
