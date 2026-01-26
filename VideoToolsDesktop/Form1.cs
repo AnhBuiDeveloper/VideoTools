@@ -16,6 +16,7 @@ namespace VideoToolsDesktop
         private TimeSpan totalDuration = TimeSpan.Zero;
         private Process currentProcess = null;
         private bool isConverting = false;
+        private bool isLoaded = false;
 
         public Form1()
         {
@@ -24,16 +25,89 @@ namespace VideoToolsDesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Initialize Defaults
-            cmbHardware.SelectedIndex = 0;
-            cmbFormat.SelectedIndex = 0;
-            cmbFontName.SelectedItem = "Arial";
+            LoadSettingsAndApply();
             
-            // Set Button Colors
+            // Attach Events for controls not covered by UI_Changed or Designer
+            cmbHardware.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
+            cmbFormat.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
+            chkUltrafast.CheckedChanged += (s, ev) => SaveCurrentSettings();
+            txtInput.TextChanged += (s, ev) => SaveCurrentSettings();
+            txtSubtitle.TextChanged += (s, ev) => SaveCurrentSettings();
+
+            isLoaded = true;
+            UpdatePreview();
+        }
+
+        private void LoadSettingsAndApply()
+        {
+            var s = SettingsManager.Load();
+            
+            // Apply to UI (checking bounds for combos)
+            if (s.HardwareIndex >= 0 && s.HardwareIndex < cmbHardware.Items.Count) cmbHardware.SelectedIndex = s.HardwareIndex;
+            else cmbHardware.SelectedIndex = 0;
+
+            if (s.FormatIndex >= 0 && s.FormatIndex < cmbFormat.Items.Count) cmbFormat.SelectedIndex = s.FormatIndex;
+            else cmbFormat.SelectedIndex = 0;
+
+            cmbFontName.SelectedItem = s.FontName;
+            if (cmbFontName.SelectedIndex == -1) cmbFontName.SelectedIndex = 0;
+
+            numFontSize.Value = s.FontSize;
+            
+            chkBold.Checked = s.IsBold;
+            chkItalic.Checked = s.IsItalic;
+            chkUnderline.Checked = s.IsUnderline;
+            chkStrike.Checked = s.IsStrikeout;
+            chkShadow.Checked = s.HasShadow;
+            chkBorder.Checked = s.HasBorder;
+            
+            numShadowWidth.Value = s.ShadowWidth;
+            numBorderWidth.Value = s.BorderWidth;
+            numMarginV.Value = s.MarginV;
+            
+            trkTransparency.Value = s.Transparency; // 0-255
+            float pct = (trkTransparency.Value / 255f) * 100f;
+            lblTransVal.Text = $"{pct:F0}%";
+            
+            chkUltrafast.Checked = s.IsUltrafast;
+
+            fontColor = Color.FromArgb(s.FontColorArgb);
+            borderColor = Color.FromArgb(s.BorderColorArgb);
             btnFontColor.BackColor = fontColor;
             btnBorderColor.BackColor = borderColor;
             
-            UpdatePreview();
+            txtInput.Text = s.InputPath;
+            txtSubtitle.Text = s.SubtitlePath;
+        }
+
+        private void SaveCurrentSettings()
+        {
+            if (!isLoaded) return;
+
+            var s = new VideoToolsSettings
+            {
+                HardwareIndex = cmbHardware.SelectedIndex,
+                FormatIndex = cmbFormat.SelectedIndex,
+                FontName = cmbFontName.SelectedItem?.ToString() ?? "Arial",
+                FontSize = numFontSize.Value,
+                IsBold = chkBold.Checked,
+                IsItalic = chkItalic.Checked,
+                IsUnderline = chkUnderline.Checked,
+                IsStrikeout = chkStrike.Checked,
+                HasShadow = chkShadow.Checked,
+                HasBorder = chkBorder.Checked,
+                ShadowWidth = numShadowWidth.Value,
+                BorderWidth = numBorderWidth.Value,
+                MarginV = numMarginV.Value,
+                Transparency = trkTransparency.Value,
+                IsUltrafast = chkUltrafast.Checked,
+                FontColorArgb = fontColor.ToArgb(),
+                BorderColorArgb = borderColor.ToArgb(),
+                InputPath = txtInput.Text,
+                SubtitlePath = txtSubtitle.Text
+            };
+            
+            SettingsManager.Save(s);
         }
 
         // --- Logic ---
@@ -129,13 +203,18 @@ namespace VideoToolsDesktop
 
         private void btnBrowseInput_Click(object sender, EventArgs e) => BrowseFile(txtInput, "Video Files|*.mkv;*.mp4;*.avi;*.mov|All Files|*.*");
         private void btnBrowseSub_Click(object sender, EventArgs e) => BrowseFile(txtSubtitle, "Subtitle Files|*.srt|All Files|*.*");
-        private void UI_Changed(object sender, EventArgs e) => UpdatePreview();
+        private void UI_Changed(object sender, EventArgs e) 
+        {
+            UpdatePreview();
+            SaveCurrentSettings();
+        }
 
         private void trkTransparency_Scroll(object sender, EventArgs e)
         {
             float pct = (trkTransparency.Value / 255f) * 100f;
             lblTransVal.Text = $"{pct:F0}%";
             UpdatePreview();
+            SaveCurrentSettings();
         }
 
         private void btnFontColor_Click(object sender, EventArgs e)
@@ -148,6 +227,7 @@ namespace VideoToolsDesktop
                     fontColor = cd.Color;
                     btnFontColor.BackColor = fontColor;
                     UpdatePreview();
+                    SaveCurrentSettings();
                 }
             }
         }
@@ -162,6 +242,7 @@ namespace VideoToolsDesktop
                     borderColor = cd.Color;
                     btnBorderColor.BackColor = borderColor;
                     UpdatePreview();
+                    SaveCurrentSettings();
                 }
             }
         }
@@ -309,7 +390,7 @@ namespace VideoToolsDesktop
                  {
                      // Quality Mode (Refined Request)
                      // Libx264: slow, crf 21, profile high
-                     args += "-preset slow -crf 21 -profile:v high ";
+                     args += "-preset slow -crf 21 -profile:v high -pix_fmt yuv420p ";
                  }
             }
 
