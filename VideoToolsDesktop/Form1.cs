@@ -300,6 +300,8 @@ namespace VideoToolsDesktop
 
             string inputFile = txtInput.Text;
             if (!File.Exists(inputFile)) { MessageBox.Show("Select video file."); return; }
+            string workDir = Path.GetDirectoryName(inputFile);
+            string tempSubFile = null;
 
             string fmt = cmbFormat.SelectedItem.ToString();
             string outputFile = Path.ChangeExtension(inputFile, $"_converted_advanced.{fmt}");
@@ -309,7 +311,12 @@ namespace VideoToolsDesktop
 
             if (File.Exists(txtSubtitle.Text))
             {
-                string subPath = txtSubtitle.Text.Replace("\\", "/").Replace(":", "\\:");
+                // Create temp file with simple name
+                string safeName = "temp_sub_" + Guid.NewGuid().ToString("N") + ".srt";
+                tempSubFile = Path.Combine(workDir, safeName);
+                File.Copy(txtSubtitle.Text, tempSubFile, true);
+                
+                string subPath = safeName;
                 
                 // Construct Force Style String
                 // Colors: &HAABBGGRR
@@ -336,6 +343,7 @@ namespace VideoToolsDesktop
                 // Alignment=2 (Bottom Center) is default
                 style += ",Alignment=2,BorderStyle=1";
 
+                // Use single quotes for filename (safe now), inside double quotes for filter
                 args += $"-vf \"subtitles='{subPath}':force_style='{style}'\" ";
             }
 
@@ -408,7 +416,14 @@ namespace VideoToolsDesktop
             {
                 try
                 {
-                    ProcessStartInfo psi = new ProcessStartInfo { FileName = ffmpegPath, Arguments = args, UseShellExecute = false, RedirectStandardError = true, CreateNoWindow = true };
+                    ProcessStartInfo psi = new ProcessStartInfo { 
+                        FileName = ffmpegPath, 
+                        Arguments = args, 
+                        UseShellExecute = false, 
+                        RedirectStandardError = true, 
+                        CreateNoWindow = true,
+                        WorkingDirectory = workDir // Set CWD so relative paths work
+                    };
                     using (Process p = new Process())
                     {
                         currentProcess = p;
@@ -425,6 +440,14 @@ namespace VideoToolsDesktop
                     }
                 }
                 catch (Exception ex) { this.Invoke(new Action(() => { Log("Err: " + ex.Message); isConverting = false; })); }
+                finally 
+                {
+                    // Cleanup temp file
+                    if (!string.IsNullOrEmpty(tempSubFile) && File.Exists(tempSubFile))
+                    {
+                        try { File.Delete(tempSubFile); } catch { }
+                    }
+                }
             });
         }
     }
