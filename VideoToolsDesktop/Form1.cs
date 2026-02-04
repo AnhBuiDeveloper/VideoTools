@@ -28,6 +28,7 @@ namespace VideoToolsDesktop
             LoadSettingsAndApply();
             
             // Attach Events for controls not covered by UI_Changed or Designer
+            this.FormClosing += Form1_FormClosing;
             cmbHardware.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
             cmbFormat.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
             chkUltrafast.CheckedChanged += (s, ev) => SaveCurrentSettings();
@@ -203,6 +204,18 @@ namespace VideoToolsDesktop
 
         private void btnBrowseInput_Click(object sender, EventArgs e) => BrowseFile(txtInput, "Video Files|*.mkv;*.mp4;*.avi;*.mov|All Files|*.*");
         private void btnBrowseSub_Click(object sender, EventArgs e) => BrowseFile(txtSubtitle, "Subtitle Files|*.srt|All Files|*.*");
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (currentProcess != null && !currentProcess.HasExited)
+            {
+                try
+                {
+                    currentProcess.Kill();
+                }
+                catch { }
+            }
+        }
         private void UI_Changed(object sender, EventArgs e) 
         {
             UpdatePreview();
