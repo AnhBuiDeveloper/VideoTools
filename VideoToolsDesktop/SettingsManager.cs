@@ -7,7 +7,6 @@ namespace VideoToolsDesktop
 {
     public class VideoToolsSettings
     {
-        // UI Controls
         public int HardwareIndex { get; set; } = 0;
         public int FormatIndex { get; set; } = 0;
         public string FontName { get; set; } = "Arial";
@@ -23,19 +22,20 @@ namespace VideoToolsDesktop
         public decimal MarginV { get; set; } = 10;
         public int Transparency { get; set; } = 0;
         public bool IsUltrafast { get; set; }
-
-        // Colors (stored as ARGB int or hex string? Int is easier for Color.ToArgb)
         public int FontColorArgb { get; set; } = Color.White.ToArgb();
         public int BorderColorArgb { get; set; } = Color.Black.ToArgb();
-
-        // Inputs (Optional, usually users might want these remembered or not. Let's remember them)
         public string InputPath { get; set; } = "";
         public string SubtitlePath { get; set; } = "";
+        public string OutputPath { get; set; } = "";
     }
 
     public static class SettingsManager
     {
-        private static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+        private static readonly string ConfigDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "VideoToolsDesktop");
+
+        private static readonly string ConfigPath = Path.Combine(ConfigDir, "config.json");
 
         public static VideoToolsSettings Load()
         {
@@ -48,7 +48,7 @@ namespace VideoToolsDesktop
             }
             catch
             {
-                return new VideoToolsSettings(); // Fallback to defaults on error
+                return new VideoToolsSettings();
             }
         }
 
@@ -56,14 +56,11 @@ namespace VideoToolsDesktop
         {
             try
             {
+                Directory.CreateDirectory(ConfigDir);
                 string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(ConfigPath, json);
             }
-            catch (Exception)
-            {
-                // Silently fail or log? For auto-save, silent failure is often safer than spamming errors, 
-                // but logging to the app's log window isn't static. We'll just ignore for now.
-            }
+            catch { }
         }
     }
 }

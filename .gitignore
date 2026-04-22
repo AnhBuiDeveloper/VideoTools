@@ -26,3 +26,10 @@ dist-ssr
 # C# build artifacts
 bin/
 obj/
+
+# Large binaries and build output (exceed GitHub 100MB limit)
+VideoToolsDesktop/ffmpeg.exe
+*.msix
+*.appx
+msix_staging/
+publish/

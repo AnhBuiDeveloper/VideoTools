@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -6,6 +6,36 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- App identity -->
+    <AssemblyName>VideoToolsDesktop</AssemblyName>
+    <RootNamespace>VideoToolsDesktop</RootNamespace>
+    <AssemblyTitle>Video Tools Desktop</AssemblyTitle>
+    <Product>Video Tools Desktop</Product>
+    <Company>AnhBuiDeveloper</Company>
+    <Copyright>Copyright © 2026 AnhBuiDeveloper</Copyright>
+    <Description>Professional video subtitle styling and conversion tool powered by FFmpeg.</Description>
+
+    <!-- Version -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+
+    <!-- DPI awareness (WinForms .NET 6+ recommended approach) -->
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+
+    <!-- App manifest (OS compat, long paths) -->
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+
+    <!-- App icon -->
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <!-- Bundle ffmpeg.exe if present in project -->
+  <ItemGroup>
+    <Content Include="ffmpeg.exe" Condition="Exists('ffmpeg.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

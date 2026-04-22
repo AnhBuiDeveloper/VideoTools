@@ -10,11 +10,10 @@ namespace VideoToolsDesktop
 {
     public partial class Form1 : Form
     {
-        // State
         private Color fontColor = Color.White;
         private Color borderColor = Color.Black;
         private TimeSpan totalDuration = TimeSpan.Zero;
-        private Process currentProcess = null;
+        private Process? currentProcess = null;
         private bool isConverting = false;
         private bool isLoaded = false;
 
@@ -26,14 +25,14 @@ namespace VideoToolsDesktop
         private void Form1_Load(object sender, EventArgs e)
         {
             LoadSettingsAndApply();
-            
-            // Attach Events for controls not covered by UI_Changed or Designer
+
             this.FormClosing += Form1_FormClosing;
-            cmbHardware.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
-            cmbFormat.SelectedIndexChanged += (s, ev) => SaveCurrentSettings();
+            cmbHardware.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
+            cmbFormat.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             chkUltrafast.CheckedChanged += (s, ev) => SaveCurrentSettings();
-            txtInput.TextChanged += (s, ev) => SaveCurrentSettings();
+            txtInput.TextChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             txtSubtitle.TextChanged += (s, ev) => SaveCurrentSettings();
+            txtOutput.TextChanged += (s, ev) => SaveCurrentSettings();
 
             isLoaded = true;
             UpdatePreview();
@@ -42,8 +41,7 @@ namespace VideoToolsDesktop
         private void LoadSettingsAndApply()
         {
             var s = SettingsManager.Load();
-            
-            // Apply to UI (checking bounds for combos)
+
             if (s.HardwareIndex >= 0 && s.HardwareIndex < cmbHardware.Items.Count) cmbHardware.SelectedIndex = s.HardwareIndex;
             else cmbHardware.SelectedIndex = 0;
 
@@ -54,31 +52,29 @@ namespace VideoToolsDesktop
             if (cmbFontName.SelectedIndex == -1) cmbFontName.SelectedIndex = 0;
 
             numFontSize.Value = s.FontSize;
-            
             chkBold.Checked = s.IsBold;
             chkItalic.Checked = s.IsItalic;
             chkUnderline.Checked = s.IsUnderline;
             chkStrike.Checked = s.IsStrikeout;
             chkShadow.Checked = s.HasShadow;
             chkBorder.Checked = s.HasBorder;
-            
             numShadowWidth.Value = s.ShadowWidth;
             numBorderWidth.Value = s.BorderWidth;
             numMarginV.Value = s.MarginV;
-            
-            trkTransparency.Value = s.Transparency; // 0-255
+
+            trkTransparency.Value = s.Transparency;
             float pct = (trkTransparency.Value / 255f) * 100f;
             lblTransVal.Text = $"{pct:F0}%";
-            
-            chkUltrafast.Checked = s.IsUltrafast;
 
+            chkUltrafast.Checked = s.IsUltrafast;
             fontColor = Color.FromArgb(s.FontColorArgb);
             borderColor = Color.FromArgb(s.BorderColorArgb);
             btnFontColor.BackColor = fontColor;
             btnBorderColor.BackColor = borderColor;
-            
+
             txtInput.Text = s.InputPath;
             txtSubtitle.Text = s.SubtitlePath;
+            txtOutput.Text = s.OutputPath;
         }
 
         private void SaveCurrentSettings()
@@ -105,13 +101,43 @@ namespace VideoToolsDesktop
                 FontColorArgb = fontColor.ToArgb(),
                 BorderColorArgb = borderColor.ToArgb(),
                 InputPath = txtInput.Text,
-                SubtitlePath = txtSubtitle.Text
+                SubtitlePath = txtSubtitle.Text,
+                OutputPath = txtOutput.Text
             };
-            
+
             SettingsManager.Save(s);
         }
 
-        // --- Logic ---
+        private void AutoSetOutputPath()
+        {
+            if (!isLoaded) return;
+            if (string.IsNullOrEmpty(txtInput.Text) || !File.Exists(txtInput.Text)) return;
+
+            string fmt = cmbFormat.SelectedItem?.ToString() ?? "mp4";
+            string baseName = Path.GetFileNameWithoutExtension(txtInput.Text);
+            string dir = Path.GetDirectoryName(txtInput.Text)!;
+            txtOutput.Text = Path.Combine(dir, $"{baseName}_converted.{fmt}");
+        }
+
+        private static string FindFfmpeg()
+        {
+            // Check bundled first
+            string bundled = Path.Combine(AppContext.BaseDirectory, "ffmpeg.exe");
+            if (File.Exists(bundled)) return bundled;
+
+            // Check PATH
+            foreach (string dir in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(';'))
+            {
+                try
+                {
+                    string full = Path.Combine(dir.Trim(), "ffmpeg.exe");
+                    if (File.Exists(full)) return full;
+                }
+                catch { }
+            }
+
+            return string.Empty;
+        }
 
         private void UpdatePreview()
         {
@@ -122,12 +148,9 @@ namespace VideoToolsDesktop
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-
-                // 1. Background
                 g.Clear(Color.DimGray);
                 g.DrawString("PREVIEW", new Font("Arial", 8), Brushes.Gray, 5, 5);
 
-                // 2. Resolve Styles
                 string sampleText = "This is a sample subtitle text 123";
                 string fontName = cmbFontName.SelectedItem?.ToString() ?? "Arial";
                 float fontSize = (float)numFontSize.Value;
@@ -143,12 +166,9 @@ namespace VideoToolsDesktop
                 try { f = new Font(fontName, fontSize, style); }
                 catch { f = new Font("Arial", fontSize, style); }
 
-                // 3. Resolve Colors
-                int alpha = 255 - trkTransparency.Value; // 0=Opaque
-                Color primaryRaw = fontColor;
-                Color primary = Color.FromArgb(alpha, primaryRaw);
-                Color outlineRaw = borderColor;
-                Color outline = Color.FromArgb(alpha, outlineRaw);
+                int alpha = 255 - trkTransparency.Value;
+                Color primary = Color.FromArgb(alpha, fontColor);
+                Color outline = Color.FromArgb(alpha, borderColor);
 
                 using (f)
                 using (Brush brushText = new SolidBrush(primary))
@@ -158,65 +178,62 @@ namespace VideoToolsDesktop
                     float x = (picPreview.Width - textSize.Width) / 2;
                     float y = picPreview.Height - textSize.Height - marginV;
 
-                    // 4. Draw Shadow
                     if (chkShadow.Checked)
                     {
                         float offset = (float)numShadowWidth.Value;
                         g.DrawString(sampleText, f, brushShadow, x + offset, y + offset);
                     }
 
-                    // 5. Draw Border (Outline) using GraphicsPath
                     if (chkBorder.Checked)
                     {
                         float width = (float)numBorderWidth.Value;
                         if (width > 0)
                         {
-                            using (GraphicsPath path = new GraphicsPath())
-                            using (Pen pen = new Pen(outline, width * 2)) // Pen width is center-aligned, so x2 covers
-                            {
-                                pen.LineJoin = LineJoin.Round;
-                                path.AddString(sampleText, f.FontFamily, (int)style, g.DpiY * f.SizeInPoints / 72, new PointF(x, y), StringFormat.GenericDefault);
-                                g.DrawPath(pen, path);
-                            }
+                            using GraphicsPath path = new GraphicsPath();
+                            using Pen pen = new Pen(outline, width * 2);
+                            pen.LineJoin = LineJoin.Round;
+                            path.AddString(sampleText, f.FontFamily, (int)style, g.DpiY * f.SizeInPoints / 72, new PointF(x, y), StringFormat.GenericDefault);
+                            g.DrawPath(pen, path);
                         }
                     }
 
-                    // 6. Draw Text Fill
                     g.DrawString(sampleText, f, brushText, x, y);
                 }
             }
             picPreview.Image = bmp;
         }
 
-        // --- Helper: Convert Color to ASS Hex ---
-        // ASS Format: &HAABBGGRR (Alpha is inverted: 00=Opaque, FF=Transparent)
-        private string ToAssColor(Color c, int alphaVal)
-        {
-            // alphaVal is 0-255 (from trackbar where 0=Opaque usually in UI logic, but let's check)
-            // In UI: 0% Transparecy = 255 Alpha. Trackbar usually 0-100%. 
-            // My Trackbar is 0-255. 0 = Opaque.
-            // ASS Alpha: 00 = Opaque, FF = Transparent. So Trackbar value maps DIRECTLY to ASS Alpha.
-            
-            return $"&H{alphaVal:X2}{c.B:X2}{c.G:X2}{c.R:X2}";
-        }
-
-        // --- Event Handlers ---
+        // ASS format: &HAABBGGRR (00=Opaque, FF=Transparent)
+        private static string ToAssColor(Color c, int alphaVal)
+            => $"&H{alphaVal:X2}{c.B:X2}{c.G:X2}{c.R:X2}";
 
         private void btnBrowseInput_Click(object sender, EventArgs e) => BrowseFile(txtInput, "Video Files|*.mkv;*.mp4;*.avi;*.mov|All Files|*.*");
         private void btnBrowseSub_Click(object sender, EventArgs e) => BrowseFile(txtSubtitle, "Subtitle Files|*.srt|All Files|*.*");
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private void btnBrowseOutput_Click(object sender, EventArgs e)
+        {
+            string fmt = cmbFormat.SelectedItem?.ToString() ?? "mp4";
+            using SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = $"{fmt.ToUpper()} Files|*.{fmt}|All Files|*.*";
+            sfd.DefaultExt = fmt;
+            if (!string.IsNullOrEmpty(txtOutput.Text))
+            {
+                sfd.InitialDirectory = Path.GetDirectoryName(txtOutput.Text);
+                sfd.FileName = Path.GetFileName(txtOutput.Text);
+            }
+            if (sfd.ShowDialog() == DialogResult.OK)
+                txtOutput.Text = sfd.FileName;
+        }
+
+        private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
         {
             if (currentProcess != null && !currentProcess.HasExited)
             {
-                try
-                {
-                    currentProcess.Kill();
-                }
-                catch { }
+                try { currentProcess.Kill(); } catch { }
             }
         }
-        private void UI_Changed(object sender, EventArgs e) 
+
+        private void UI_Changed(object sender, EventArgs e)
         {
             UpdatePreview();
             SaveCurrentSettings();
@@ -232,41 +249,35 @@ namespace VideoToolsDesktop
 
         private void btnFontColor_Click(object sender, EventArgs e)
         {
-            using (ColorDialog cd = new ColorDialog())
+            using ColorDialog cd = new ColorDialog();
+            cd.Color = fontColor;
+            if (cd.ShowDialog() == DialogResult.OK)
             {
-                cd.Color = fontColor;
-                if (cd.ShowDialog() == DialogResult.OK)
-                {
-                    fontColor = cd.Color;
-                    btnFontColor.BackColor = fontColor;
-                    UpdatePreview();
-                    SaveCurrentSettings();
-                }
+                fontColor = cd.Color;
+                btnFontColor.BackColor = fontColor;
+                UpdatePreview();
+                SaveCurrentSettings();
             }
         }
 
         private void btnBorderColor_Click(object sender, EventArgs e)
         {
-            using (ColorDialog cd = new ColorDialog())
+            using ColorDialog cd = new ColorDialog();
+            cd.Color = borderColor;
+            if (cd.ShowDialog() == DialogResult.OK)
             {
-                cd.Color = borderColor;
-                if (cd.ShowDialog() == DialogResult.OK)
-                {
-                    borderColor = cd.Color;
-                    btnBorderColor.BackColor = borderColor;
-                    UpdatePreview();
-                    SaveCurrentSettings();
-                }
+                borderColor = cd.Color;
+                btnBorderColor.BackColor = borderColor;
+                UpdatePreview();
+                SaveCurrentSettings();
             }
         }
 
         private void BrowseFile(TextBox target, string filter)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog())
-            {
-                ofd.Filter = filter;
-                if (ofd.ShowDialog() == DialogResult.OK) target.Text = ofd.FileName;
-            }
+            using OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = filter;
+            if (ofd.ShowDialog() == DialogResult.OK) target.Text = ofd.FileName;
         }
 
         private void Log(string msg)
@@ -283,10 +294,7 @@ namespace VideoToolsDesktop
             {
                 var match = Regex.Match(line, @"Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})");
                 if (match.Success)
-                {
                     totalDuration = new TimeSpan(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value));
-                    lblProgress.Text = $"Total Duration: {totalDuration}";
-                }
             }
             if (line.Contains("time=") && totalDuration.TotalSeconds > 0)
             {
@@ -294,8 +302,7 @@ namespace VideoToolsDesktop
                 if (match.Success)
                 {
                     TimeSpan current = new TimeSpan(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value));
-                    double pct = (current.TotalSeconds / totalDuration.TotalSeconds) * 100;
-                    if (pct > 100) pct = 100;
+                    double pct = Math.Min((current.TotalSeconds / totalDuration.TotalSeconds) * 100, 100);
                     progressBar.Value = (int)pct;
                     lblProgress.Text = $"Progress: {pct:F1}%";
                 }
@@ -306,160 +313,159 @@ namespace VideoToolsDesktop
         {
             if (isConverting)
             {
-                try { currentProcess?.Kill(); Log("Killed."); } catch { }
-                isConverting = false; btnConvert.Text = "START CONVERSION"; btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                try { currentProcess?.Kill(); Log("Stopped."); } catch { }
+                isConverting = false;
+                btnConvert.Text = "START CONVERSION";
+                btnConvert.BackColor = Color.FromArgb(0, 122, 204);
                 return;
             }
 
             string inputFile = txtInput.Text;
-            if (!File.Exists(inputFile)) { MessageBox.Show("Select video file."); return; }
-            string workDir = Path.GetDirectoryName(inputFile);
-            string tempSubFile = null;
+            if (!File.Exists(inputFile)) { MessageBox.Show("Select a valid video file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
 
-            string fmt = cmbFormat.SelectedItem.ToString();
-            string outputFile = Path.ChangeExtension(inputFile, $"_converted_advanced.{fmt}");
-            string ffmpegPath = "ffmpeg"; 
+            string outputFile = txtOutput.Text;
+            if (string.IsNullOrWhiteSpace(outputFile))
+            {
+                AutoSetOutputPath();
+                outputFile = txtOutput.Text;
+            }
+            if (string.IsNullOrWhiteSpace(outputFile)) { MessageBox.Show("Select an output file path.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
 
+            string ffmpegPath = FindFfmpeg();
+            if (string.IsNullOrEmpty(ffmpegPath))
+            {
+                MessageBox.Show(
+                    "ffmpeg.exe not found.\n\n" +
+                    "Download from https://ffmpeg.org/download.html and place ffmpeg.exe:\n" +
+                    $"  • Next to this app: {AppContext.BaseDirectory}\n" +
+                    "  • Or add to system PATH",
+                    "FFmpeg Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string? tempSubFile = null;
             string args = $"-i \"{inputFile}\" -sn ";
 
             if (File.Exists(txtSubtitle.Text))
             {
-                // Create temp file with simple name
-                string safeName = "temp_sub_" + Guid.NewGuid().ToString("N") + ".srt";
-                tempSubFile = Path.Combine(workDir, safeName);
+                string tempDir = Path.Combine(Path.GetTempPath(), "VideoToolsDesktop");
+                Directory.CreateDirectory(tempDir);
+                string safeName = "sub_" + Guid.NewGuid().ToString("N") + ".srt";
+                tempSubFile = Path.Combine(tempDir, safeName);
                 File.Copy(txtSubtitle.Text, tempSubFile, true);
-                
-                string subPath = safeName;
-                
-                // Construct Force Style String
-                // Colors: &HAABBGGRR
+
                 int alpha = trkTransparency.Value;
                 string primColor = ToAssColor(fontColor, alpha);
-                string outColor = ToAssColor(borderColor, alpha); // Usually border keeps same alpha or solid? Let's use same.
-                
+                string outColor = ToAssColor(borderColor, alpha);
                 string font = cmbFontName.SelectedItem?.ToString() ?? "Arial";
                 int size = (int)numFontSize.Value;
                 int margin = (int)numMarginV.Value;
-                
-                int bold = chkBold.Checked ? -1 : 0; // ASS uses -1 for true sometimes, but 1 works too. FFMPEG doc says 1. Let's use 1. Actually VSFilter uses -1. Let's stick to 1 for safety.
+
+                // ASS bold: -1 = true (VSFilter standard)
+                int bold = chkBold.Checked ? -1 : 0;
                 int italic = chkItalic.Checked ? 1 : 0;
                 int uline = chkUnderline.Checked ? 1 : 0;
                 int strike = chkStrike.Checked ? 1 : 0;
-                
                 int shadow = chkShadow.Checked ? (int)numShadowWidth.Value : 0;
                 int outline = chkBorder.Checked ? (int)numBorderWidth.Value : 0;
 
                 string style = $"FontName={font},FontSize={size},PrimaryColour={primColor},OutlineColour={outColor}";
                 style += $",Bold={bold},Italic={italic},Underline={uline},StrikeOut={strike}";
-                style += $",Shadow={shadow},Outline={outline},MarginV={margin}";
-                
-                // Alignment=2 (Bottom Center) is default
-                style += ",Alignment=2,BorderStyle=1";
+                style += $",Shadow={shadow},Outline={outline},MarginV={margin},Alignment=2,BorderStyle=1";
 
-                // Use single quotes for filename (safe now), inside double quotes for filter
-                args += $"-vf \"subtitles='{subPath}':force_style='{style}'\" ";
+                args += $"-vf \"subtitles='{safeName}':force_style='{style}'\" ";
             }
 
-            // 1. Audio & Mapping
-            // -c:a copy: Copy audio stream without re-encoding
-            // -map 0:v:0: Select first video stream from input
-            // -map 0:a: Select all audio streams from input
             args += "-c:a copy -map 0:v:0 -map 0:a ";
 
-            // 2. Video Encoder & Presets
-            string encoder = "libx264";
-            
             if (cmbHardware.Text.Contains("NVIDIA"))
             {
-                encoder = "h264_nvenc";
-                args += $"-c:v {encoder} ";
-
-                if (chkUltrafast.Checked)
-                {
-                    // Speed Mode
-                    args += "-preset p1 "; 
-                }
-                else
-                {
-                    // Quality Mode (Constrained VBR Level 3.1)
-                    // P6, VBR HQ, CQ 20, Max 6M, Buf 12M, BF 3, Refs 4
-                    args += "-preset p6 -profile:v high -level 3.1 -rc vbr_hq -cq 20 -maxrate 6000k -bufsize 12000k -bf 3 -refs 4 ";
-                }
+                args += chkUltrafast.Checked
+                    ? "-c:v h264_nvenc -preset p1 "
+                    : "-c:v h264_nvenc -preset p6 -profile:v high -level 3.1 -rc vbr_hq -cq 20 -maxrate 6000k -bufsize 12000k -bf 3 -refs 4 ";
             }
             else if (cmbHardware.Text.Contains("AMD"))
             {
-                 encoder = "h264_amf";
-                 args += $"-c:v {encoder} ";
-                 if (chkUltrafast.Checked) args += "-quality speed ";
-                 else args += "-quality balanced ";
+                args += chkUltrafast.Checked
+                    ? "-c:v h264_amf -quality speed "
+                    : "-c:v h264_amf -quality balanced ";
             }
             else if (cmbHardware.Text.Contains("Intel"))
             {
-                 encoder = "h264_qsv";
-                 args += $"-c:v {encoder} ";
-                 if (chkUltrafast.Checked) args += "-preset veryfast ";
-                 else args += "-preset medium ";
+                args += chkUltrafast.Checked
+                    ? "-c:v h264_qsv -preset veryfast "
+                    : "-c:v h264_qsv -preset medium ";
             }
-            else // CPU (Software)
+            else
             {
-                 args += "-c:v libx264 ";
-                 if (chkUltrafast.Checked) 
-                 {
-                     args += "-preset ultrafast ";
-                 }
-                 else 
-                 {
-                     // Quality Mode (Refined Request)
-                     // Libx264: slow, crf 21, profile high
-                     args += "-preset slow -crf 21 -profile:v high -pix_fmt yuv420p ";
-                 }
+                args += chkUltrafast.Checked
+                    ? "-c:v libx264 -preset ultrafast "
+                    : "-c:v libx264 -preset slow -crf 21 -profile:v high -pix_fmt yuv420p ";
             }
 
             args += $"\"{outputFile}\" -y";
 
             progressBar.Value = 0;
             txtLog.Clear();
-            Log($"CMD: {ffmpegPath} {args}");
+            Log($"FFmpeg: {ffmpegPath}");
+            Log($"Args: {args}");
 
             isConverting = true;
             btnConvert.Text = "STOP CONVERSION";
             btnConvert.BackColor = Color.Red;
 
+            string tempDir2 = tempSubFile != null ? Path.GetDirectoryName(tempSubFile)! : Path.GetDirectoryName(inputFile)!;
+
             await System.Threading.Tasks.Task.Run(() =>
             {
                 try
                 {
-                    ProcessStartInfo psi = new ProcessStartInfo { 
-                        FileName = ffmpegPath, 
-                        Arguments = args, 
-                        UseShellExecute = false, 
-                        RedirectStandardError = true, 
+                    ProcessStartInfo psi = new ProcessStartInfo
+                    {
+                        FileName = ffmpegPath,
+                        Arguments = args,
+                        UseShellExecute = false,
+                        RedirectStandardError = true,
                         CreateNoWindow = true,
-                        WorkingDirectory = workDir // Set CWD so relative paths work
+                        WorkingDirectory = tempDir2
                     };
-                    using (Process p = new Process())
+                    using Process p = new Process();
+                    currentProcess = p;
+                    p.StartInfo = psi;
+                    p.ErrorDataReceived += (s, data) => { if (data.Data != null) Log(data.Data); };
+                    p.Start();
+                    p.BeginErrorReadLine();
+                    p.WaitForExit();
+
+                    this.Invoke(new Action(() =>
                     {
-                        currentProcess = p;
-                        p.StartInfo = psi;
-                        p.ErrorDataReceived += (s, data) => { if (data.Data != null) Log(data.Data); };
-                        p.Start();
-                        p.BeginErrorReadLine();
-                        p.WaitForExit();
-                        this.Invoke(new Action(() =>
+                        if (isConverting)
                         {
-                            if (isConverting) MessageBox.Show(p.ExitCode == 0 ? "Success!" : "Failed!");
-                            isConverting = false; btnConvert.Text = "START CONVERSION"; btnConvert.BackColor = Color.FromArgb(0, 122, 204);
-                        }));
-                    }
+                            if (p.ExitCode == 0)
+                                MessageBox.Show($"Conversion complete!\n\nOutput: {outputFile}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            else
+                                MessageBox.Show($"FFmpeg exited with code {p.ExitCode}.\nCheck the log for details.", "Conversion Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        isConverting = false;
+                        btnConvert.Text = "START CONVERSION";
+                        btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                    }));
                 }
-                catch (Exception ex) { this.Invoke(new Action(() => { Log("Err: " + ex.Message); isConverting = false; })); }
-                finally 
+                catch (Exception ex)
                 {
-                    // Cleanup temp file
-                    if (!string.IsNullOrEmpty(tempSubFile) && File.Exists(tempSubFile))
+                    this.Invoke(new Action(() =>
                     {
+                        Log("Error: " + ex.Message);
+                        MessageBox.Show("Unexpected error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        isConverting = false;
+                        btnConvert.Text = "START CONVERSION";
+                        btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                    }));
+                }
+                finally
+                {
+                    if (!string.IsNullOrEmpty(tempSubFile) && File.Exists(tempSubFile))
                         try { File.Delete(tempSubFile); } catch { }
-                    }
                 }
             });
         }
