@@ -148,8 +148,19 @@ namespace VideoToolsDesktop
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                g.Clear(Color.DimGray);
-                g.DrawString("PREVIEW", new Font("Arial", 8), Brushes.Gray, 5, 5);
+                using LinearGradientBrush bg = new LinearGradientBrush(
+                    new Rectangle(0, 0, picPreview.Width, picPreview.Height),
+                    Color.FromArgb(30, 41, 59),
+                    Color.FromArgb(15, 23, 42),
+                    LinearGradientMode.Vertical);
+                g.FillRectangle(bg, 0, 0, picPreview.Width, picPreview.Height);
+
+                using Pen frame = new Pen(Color.FromArgb(71, 85, 105), 1);
+                g.DrawRectangle(frame, 0, 0, picPreview.Width - 1, picPreview.Height - 1);
+
+                using Brush labelBrush = new SolidBrush(Color.FromArgb(148, 163, 184));
+                using Font labelFont = new Font("Segoe UI Semibold", 8F, FontStyle.Bold);
+                g.DrawString("PREVIEW", labelFont, labelBrush, 12, 10);
 
                 string sampleText = "This is a sample subtitle text 123";
                 string fontName = cmbFontName.SelectedItem?.ToString() ?? "Arial";
@@ -175,8 +186,9 @@ namespace VideoToolsDesktop
                 using (Brush brushShadow = new SolidBrush(Color.FromArgb(128, 0, 0, 0)))
                 {
                     SizeF textSize = g.MeasureString(sampleText, f);
-                    float x = (picPreview.Width - textSize.Width) / 2;
-                    float y = picPreview.Height - textSize.Height - marginV;
+                    float x = Math.Max(16, (picPreview.Width - textSize.Width) / 2);
+                    float previewMargin = Math.Min(marginV, 22);
+                    float y = Math.Max(20, picPreview.Height - textSize.Height - previewMargin);
 
                     if (chkShadow.Checked)
                     {
@@ -316,7 +328,7 @@ namespace VideoToolsDesktop
                 try { currentProcess?.Kill(); Log("Stopped."); } catch { }
                 isConverting = false;
                 btnConvert.Text = "START CONVERSION";
-                btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                btnConvert.BackColor = Color.FromArgb(14, 165, 233);
                 return;
             }
 
@@ -412,7 +424,7 @@ namespace VideoToolsDesktop
 
             isConverting = true;
             btnConvert.Text = "STOP CONVERSION";
-            btnConvert.BackColor = Color.Red;
+            btnConvert.BackColor = Color.FromArgb(239, 68, 68);
 
             string tempDir2 = tempSubFile != null ? Path.GetDirectoryName(tempSubFile)! : Path.GetDirectoryName(inputFile)!;
 
@@ -448,7 +460,7 @@ namespace VideoToolsDesktop
                         }
                         isConverting = false;
                         btnConvert.Text = "START CONVERSION";
-                        btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                        btnConvert.BackColor = Color.FromArgb(14, 165, 233);
                     }));
                 }
                 catch (Exception ex)
@@ -459,7 +471,7 @@ namespace VideoToolsDesktop
                         MessageBox.Show("Unexpected error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         isConverting = false;
                         btnConvert.Text = "START CONVERSION";
-                        btnConvert.BackColor = Color.FromArgb(0, 122, 204);
+                        btnConvert.BackColor = Color.FromArgb(14, 165, 233);
                     }));
                 }
                 finally

@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace VideoToolsDesktop
 {
@@ -18,54 +20,58 @@ namespace VideoToolsDesktop
 
         private void InitializeComponent()
         {
-            this.lblHeader1 = new System.Windows.Forms.Label();
-            this.lblVideo = new System.Windows.Forms.Label();
-            this.txtInput = new System.Windows.Forms.TextBox();
-            this.btnBrowseInput = new System.Windows.Forms.Button();
-            this.lblSubtitle = new System.Windows.Forms.Label();
-            this.txtSubtitle = new System.Windows.Forms.TextBox();
-            this.btnBrowseSub = new System.Windows.Forms.Button();
-            this.lblOutput = new System.Windows.Forms.Label();
-            this.txtOutput = new System.Windows.Forms.TextBox();
-            this.btnBrowseOutput = new System.Windows.Forms.Button();
-            this.lblHeader2 = new System.Windows.Forms.Label();
-            this.lblHardware = new System.Windows.Forms.Label();
-            this.cmbHardware = new System.Windows.Forms.ComboBox();
-            this.lblFormat = new System.Windows.Forms.Label();
-            this.cmbFormat = new System.Windows.Forms.ComboBox();
-            this.chkUltrafast = new System.Windows.Forms.CheckBox();
-            this.lblHeader3 = new System.Windows.Forms.Label();
-            this.lblFont = new System.Windows.Forms.Label();
-            this.cmbFontName = new System.Windows.Forms.ComboBox();
-            this.lblSize = new System.Windows.Forms.Label();
-            this.numFontSize = new System.Windows.Forms.NumericUpDown();
-            this.lblColor = new System.Windows.Forms.Label();
-            this.btnFontColor = new System.Windows.Forms.Button();
-            this.lblMargin = new System.Windows.Forms.Label();
-            this.numMarginV = new System.Windows.Forms.NumericUpDown();
-
-            this.grpAdvanced = new System.Windows.Forms.GroupBox();
-            this.chkBold = new System.Windows.Forms.CheckBox();
-            this.chkItalic = new System.Windows.Forms.CheckBox();
-            this.chkUnderline = new System.Windows.Forms.CheckBox();
-            this.chkStrike = new System.Windows.Forms.CheckBox();
-            this.lblTrans = new System.Windows.Forms.Label();
-            this.trkTransparency = new System.Windows.Forms.TrackBar();
-            this.lblTransVal = new System.Windows.Forms.Label();
-            this.chkShadow = new System.Windows.Forms.CheckBox();
-            this.lblSdw = new System.Windows.Forms.Label();
-            this.numShadowWidth = new System.Windows.Forms.NumericUpDown();
-            this.chkBorder = new System.Windows.Forms.CheckBox();
-            this.lblBrd = new System.Windows.Forms.Label();
-            this.numBorderWidth = new System.Windows.Forms.NumericUpDown();
-            this.btnBorderColor = new System.Windows.Forms.Button();
-
-            this.lblPreview = new System.Windows.Forms.Label();
-            this.picPreview = new System.Windows.Forms.PictureBox();
-            this.btnConvert = new System.Windows.Forms.Button();
-            this.lblProgress = new System.Windows.Forms.Label();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.txtLog = new System.Windows.Forms.RichTextBox();
+            this.lblAppTitle = new Label();
+            this.lblAppSubtitle = new Label();
+            this.pnlSource = new RoundedPanel();
+            this.lblHeader1 = new Label();
+            this.lblVideo = new Label();
+            this.txtInput = new TextBox();
+            this.btnBrowseInput = new Button();
+            this.lblSubtitle = new Label();
+            this.txtSubtitle = new TextBox();
+            this.btnBrowseSub = new Button();
+            this.lblOutput = new Label();
+            this.txtOutput = new TextBox();
+            this.btnBrowseOutput = new Button();
+            this.pnlConversion = new RoundedPanel();
+            this.lblHeader2 = new Label();
+            this.lblHardware = new Label();
+            this.cmbHardware = new ComboBox();
+            this.lblFormat = new Label();
+            this.cmbFormat = new ComboBox();
+            this.chkUltrafast = new CheckBox();
+            this.pnlStyle = new RoundedPanel();
+            this.lblHeader3 = new Label();
+            this.lblFont = new Label();
+            this.cmbFontName = new ComboBox();
+            this.lblSize = new Label();
+            this.numFontSize = new NumericUpDown();
+            this.lblColor = new Label();
+            this.btnFontColor = new Button();
+            this.lblMargin = new Label();
+            this.numMarginV = new NumericUpDown();
+            this.grpAdvanced = new GroupBox();
+            this.chkBold = new CheckBox();
+            this.chkItalic = new CheckBox();
+            this.chkUnderline = new CheckBox();
+            this.chkStrike = new CheckBox();
+            this.lblTrans = new Label();
+            this.trkTransparency = new TrackBar();
+            this.lblTransVal = new Label();
+            this.chkShadow = new CheckBox();
+            this.lblSdw = new Label();
+            this.numShadowWidth = new NumericUpDown();
+            this.chkBorder = new CheckBox();
+            this.lblBrd = new Label();
+            this.numBorderWidth = new NumericUpDown();
+            this.btnBorderColor = new Button();
+            this.pnlPreview = new RoundedPanel();
+            this.lblPreview = new Label();
+            this.picPreview = new PictureBox();
+            this.btnConvert = new Button();
+            this.lblProgress = new Label();
+            this.progressBar = new ProgressBar();
+            this.txtLog = new RichTextBox();
 
             ((System.ComponentModel.ISupportInitialize)(this.numFontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMarginV)).BeginInit();
@@ -76,158 +82,209 @@ namespace VideoToolsDesktop
             ((System.ComponentModel.ISupportInitialize)(this.picPreview)).BeginInit();
             this.SuspendLayout();
 
+            Color page = Color.FromArgb(13, 18, 30);
+            Color card = Color.FromArgb(21, 30, 45);
+            Color field = Color.FromArgb(11, 18, 31);
+            Color border = Color.FromArgb(45, 59, 78);
+            Color text = Color.FromArgb(235, 241, 248);
+            Color muted = Color.FromArgb(148, 163, 184);
+            Color accent = Color.FromArgb(14, 165, 233);
+            Color accentGreen = Color.FromArgb(34, 197, 94);
+
             // FORM
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(30, 30, 35);
-            this.ForeColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(700, 940);
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.BackColor = page;
+            this.ClientSize = new Size(820, 690);
+            this.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            this.ForeColor = text;
+            this.MinimumSize = new Size(760, 650);
             this.Name = "Form1";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Video Tools Desktop";
             this.Load += new System.EventHandler(this.Form1_Load);
 
-            // --- 1. Source Files ---
-            int y = 20;
-            this.lblHeader1.AutoSize = true; this.lblHeader1.Location = new System.Drawing.Point(20, y); this.lblHeader1.Text = "1. Source Files"; this.lblHeader1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold); this.lblHeader1.ForeColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            // APP HEADER
+            this.lblAppTitle.AutoSize = true;
+            this.lblAppTitle.Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblAppTitle.ForeColor = Color.White;
+            this.lblAppTitle.Location = new Point(22, 14);
+            this.lblAppTitle.Text = "Video Tools Desktop";
 
-            y += 30; // 50
-            this.lblVideo.AutoSize = true; this.lblVideo.Location = new System.Drawing.Point(20, y + 3); this.lblVideo.Text = "Video:";
-            this.txtInput.Location = new System.Drawing.Point(100, y); this.txtInput.Size = new System.Drawing.Size(470, 23); this.txtInput.BackColor = System.Drawing.Color.FromArgb(50, 50, 60); this.txtInput.ForeColor = System.Drawing.Color.White; this.txtInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.btnBrowseInput.Location = new System.Drawing.Point(580, y - 1); this.btnBrowseInput.Size = new System.Drawing.Size(80, 25); this.btnBrowseInput.Text = "..."; this.btnBrowseInput.BackColor = System.Drawing.Color.FromArgb(60, 60, 70); this.btnBrowseInput.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnBrowseInput.Click += new System.EventHandler(this.btnBrowseInput_Click);
+            this.lblAppSubtitle.AutoSize = true;
+            this.lblAppSubtitle.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            this.lblAppSubtitle.ForeColor = muted;
+            this.lblAppSubtitle.Location = new Point(24, 48);
+            this.lblAppSubtitle.Text = "Convert videos and burn styled subtitles with FFmpeg.";
 
-            y += 35; // 85
-            this.lblSubtitle.AutoSize = true; this.lblSubtitle.Location = new System.Drawing.Point(20, y + 3); this.lblSubtitle.Text = "Subtitle:";
-            this.txtSubtitle.Location = new System.Drawing.Point(100, y); this.txtSubtitle.Size = new System.Drawing.Size(470, 23); this.txtSubtitle.BackColor = System.Drawing.Color.FromArgb(50, 50, 60); this.txtSubtitle.ForeColor = System.Drawing.Color.White; this.txtSubtitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.btnBrowseSub.Location = new System.Drawing.Point(580, y - 1); this.btnBrowseSub.Size = new System.Drawing.Size(80, 25); this.btnBrowseSub.Text = "..."; this.btnBrowseSub.BackColor = System.Drawing.Color.FromArgb(60, 60, 70); this.btnBrowseSub.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnBrowseSub.Click += new System.EventHandler(this.btnBrowseSub_Click);
+            // SOURCE CARD
+            ConfigureCard(this.pnlSource, card, border, new Point(20, 76), new Size(780, 132));
+            ConfigureSectionHeader(this.lblHeader1, "01  Source Files", accent, new Point(18, 12));
 
-            y += 35; // 120
-            this.lblOutput.AutoSize = true; this.lblOutput.Location = new System.Drawing.Point(20, y + 3); this.lblOutput.Text = "Output:";
-            this.txtOutput.Location = new System.Drawing.Point(100, y); this.txtOutput.Size = new System.Drawing.Size(470, 23); this.txtOutput.BackColor = System.Drawing.Color.FromArgb(50, 50, 60); this.txtOutput.ForeColor = System.Drawing.Color.White; this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.btnBrowseOutput.Location = new System.Drawing.Point(580, y - 1); this.btnBrowseOutput.Size = new System.Drawing.Size(80, 25); this.btnBrowseOutput.Text = "..."; this.btnBrowseOutput.BackColor = System.Drawing.Color.FromArgb(60, 60, 70); this.btnBrowseOutput.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnBrowseOutput.Click += new System.EventHandler(this.btnBrowseOutput_Click);
+            ConfigureLabel(this.lblVideo, "Video", muted, new Point(18, 42));
+            ConfigureTextBox(this.txtInput, field, text, border, new Point(96, 38), new Size(560, 26));
+            ConfigureButton(this.btnBrowseInput, "Browse", Color.FromArgb(30, 41, 59), text, border, new Point(674, 37), new Size(82, 28));
+            this.btnBrowseInput.Click += new System.EventHandler(this.btnBrowseInput_Click);
 
-            // --- 2. Conversion Settings ---
-            y += 45; // 165
-            this.lblHeader2.AutoSize = true; this.lblHeader2.Location = new System.Drawing.Point(20, y); this.lblHeader2.Text = "2. Conversion Settings"; this.lblHeader2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold); this.lblHeader2.ForeColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            ConfigureLabel(this.lblSubtitle, "Subtitle", muted, new Point(18, 72));
+            ConfigureTextBox(this.txtSubtitle, field, text, border, new Point(96, 68), new Size(560, 26));
+            ConfigureButton(this.btnBrowseSub, "Browse", Color.FromArgb(30, 41, 59), text, border, new Point(674, 67), new Size(82, 28));
+            this.btnBrowseSub.Click += new System.EventHandler(this.btnBrowseSub_Click);
 
-            y += 30; // 195
-            this.lblHardware.AutoSize = true; this.lblHardware.Location = new System.Drawing.Point(20, y + 3); this.lblHardware.Text = "Hardware:";
-            this.cmbHardware.Location = new System.Drawing.Point(100, y); this.cmbHardware.Size = new System.Drawing.Size(200, 23);
+            ConfigureLabel(this.lblOutput, "Output", muted, new Point(18, 102));
+            ConfigureTextBox(this.txtOutput, field, text, border, new Point(96, 98), new Size(560, 26));
+            ConfigureButton(this.btnBrowseOutput, "Browse", Color.FromArgb(30, 41, 59), text, border, new Point(674, 97), new Size(82, 28));
+            this.btnBrowseOutput.Click += new System.EventHandler(this.btnBrowseOutput_Click);
+
+            this.pnlSource.Controls.AddRange(new Control[] {
+                this.lblHeader1, this.lblVideo, this.txtInput, this.btnBrowseInput,
+                this.lblSubtitle, this.txtSubtitle, this.btnBrowseSub,
+                this.lblOutput, this.txtOutput, this.btnBrowseOutput
+            });
+
+            // CONVERSION CARD
+            ConfigureCard(this.pnlConversion, card, border, new Point(20, 220), new Size(780, 82));
+            ConfigureSectionHeader(this.lblHeader2, "02  Conversion Settings", accent, new Point(18, 12));
+
+            ConfigureLabel(this.lblHardware, "Hardware", muted, new Point(18, 48));
+            ConfigureCombo(this.cmbHardware, field, text, new Point(96, 43), new Size(210, 28));
             this.cmbHardware.Items.AddRange(new object[] { "Software (CPU)", "NVIDIA (NVENC)", "AMD (AMF)", "Intel (QSV)" });
 
-            this.lblFormat.AutoSize = true; this.lblFormat.Location = new System.Drawing.Point(340, y + 3); this.lblFormat.Text = "Format:";
-            this.cmbFormat.Location = new System.Drawing.Point(400, y); this.cmbFormat.Size = new System.Drawing.Size(80, 23);
+            ConfigureLabel(this.lblFormat, "Format", muted, new Point(346, 48));
+            ConfigureCombo(this.cmbFormat, field, text, new Point(408, 43), new Size(104, 28));
             this.cmbFormat.Items.AddRange(new object[] { "mkv", "mp4", "avi" });
 
-            y += 35; // 230
-            this.chkUltrafast.AutoSize = true; this.chkUltrafast.Location = new System.Drawing.Point(100, y); this.chkUltrafast.Text = "Ultrafast Preset (Max Speed)";
+            ConfigureCheckBox(this.chkUltrafast, "Ultrafast preset", text, new Point(570, 46));
 
-            // --- 3. Subtitle Style ---
-            y += 40; // 270
-            this.lblHeader3.AutoSize = true; this.lblHeader3.Location = new System.Drawing.Point(20, y); this.lblHeader3.Text = "3. Subtitle Style & Preview"; this.lblHeader3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold); this.lblHeader3.ForeColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.pnlConversion.Controls.AddRange(new Control[] {
+                this.lblHeader2, this.lblHardware, this.cmbHardware,
+                this.lblFormat, this.cmbFormat, this.chkUltrafast
+            });
 
-            y += 30; // 300
-            this.lblFont.AutoSize = true; this.lblFont.Location = new System.Drawing.Point(20, y + 3); this.lblFont.Text = "Font:";
-            this.cmbFontName.Location = new System.Drawing.Point(100, y); this.cmbFontName.Size = new System.Drawing.Size(180, 23); this.cmbFontName.SelectedIndexChanged += new System.EventHandler(this.UI_Changed);
+            // STYLE CARD
+            ConfigureCard(this.pnlStyle, card, border, new Point(20, 314), new Size(780, 194));
+            ConfigureSectionHeader(this.lblHeader3, "03  Subtitle Style", accent, new Point(18, 12));
+
+            ConfigureLabel(this.lblFont, "Font", muted, new Point(18, 48));
+            ConfigureCombo(this.cmbFontName, field, text, new Point(96, 43), new Size(178, 28));
             this.cmbFontName.Items.AddRange(new object[] { "Arial", "Times New Roman", "Verdana", "Tahoma", "Courier New", "Comic Sans MS" });
+            this.cmbFontName.SelectedIndexChanged += new System.EventHandler(this.UI_Changed);
 
-            this.lblSize.AutoSize = true; this.lblSize.Location = new System.Drawing.Point(300, y + 3); this.lblSize.Text = "Size:";
-            this.numFontSize.Location = new System.Drawing.Point(340, y); this.numFontSize.Size = new System.Drawing.Size(60, 23); this.numFontSize.Minimum = 8; this.numFontSize.Value = 24; this.numFontSize.ValueChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureLabel(this.lblSize, "Size", muted, new Point(302, 48));
+            ConfigureNumeric(this.numFontSize, field, text, new Point(346, 43), new Size(64, 28));
+            this.numFontSize.Minimum = 8;
+            this.numFontSize.Value = 24;
+            this.numFontSize.ValueChanged += new System.EventHandler(this.UI_Changed);
 
-            y += 35; // 335
-            this.lblColor.AutoSize = true; this.lblColor.Location = new System.Drawing.Point(20, y + 5); this.lblColor.Text = "Color:";
-            this.btnFontColor.Location = new System.Drawing.Point(100, y); this.btnFontColor.Size = new System.Drawing.Size(120, 27); this.btnFontColor.Text = "PICK COLOR"; this.btnFontColor.BackColor = System.Drawing.Color.White; this.btnFontColor.ForeColor = System.Drawing.Color.Black; this.btnFontColor.Click += new System.EventHandler(this.btnFontColor_Click);
+            ConfigureLabel(this.lblColor, "Color", muted, new Point(436, 48));
+            ConfigureButton(this.btnFontColor, "Text Color", Color.White, Color.FromArgb(15, 23, 42), border, new Point(486, 41), new Size(96, 30));
+            this.btnFontColor.Click += new System.EventHandler(this.btnFontColor_Click);
 
-            this.lblMargin.AutoSize = true; this.lblMargin.Location = new System.Drawing.Point(300, y + 5); this.lblMargin.Text = "Bottom:";
-            this.numMarginV.Location = new System.Drawing.Point(360, y + 2); this.numMarginV.Size = new System.Drawing.Size(60, 23); this.numMarginV.Value = 30; this.numMarginV.ValueChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureLabel(this.lblMargin, "Bottom", muted, new Point(616, 48));
+            ConfigureNumeric(this.numMarginV, field, text, new Point(680, 43), new Size(64, 28));
+            this.numMarginV.Value = 30;
+            this.numMarginV.ValueChanged += new System.EventHandler(this.UI_Changed);
 
-            // --- Advanced Group ---
-            y += 40; // 375
-            this.grpAdvanced.Location = new System.Drawing.Point(20, y);
-            this.grpAdvanced.Size = new System.Drawing.Size(640, 150);
-            this.grpAdvanced.Text = "Advanced Styling"; this.grpAdvanced.ForeColor = System.Drawing.Color.White;
+            this.grpAdvanced.BackColor = card;
+            this.grpAdvanced.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.grpAdvanced.ForeColor = muted;
+            this.grpAdvanced.Location = new Point(18, 78);
+            this.grpAdvanced.Size = new Size(738, 100);
+            this.grpAdvanced.Text = " Advanced styling ";
 
-            this.chkBold.Location = new System.Drawing.Point(20, 30); this.chkBold.Text = "Bold"; this.chkBold.AutoSize = true; this.chkBold.Checked = true; this.chkBold.CheckedChanged += new System.EventHandler(this.UI_Changed);
-            this.chkItalic.Location = new System.Drawing.Point(100, 30); this.chkItalic.Text = "Italic"; this.chkItalic.AutoSize = true; this.chkItalic.CheckedChanged += new System.EventHandler(this.UI_Changed);
-            this.chkUnderline.Location = new System.Drawing.Point(180, 30); this.chkUnderline.Text = "Underline"; this.chkUnderline.AutoSize = true; this.chkUnderline.CheckedChanged += new System.EventHandler(this.UI_Changed);
-            this.chkStrike.Location = new System.Drawing.Point(280, 30); this.chkStrike.Text = "Strike"; this.chkStrike.AutoSize = true; this.chkStrike.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureCheckBox(this.chkBold, "Bold", text, new Point(18, 28));
+            this.chkBold.Checked = true;
+            this.chkBold.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureCheckBox(this.chkItalic, "Italic", text, new Point(86, 28));
+            this.chkItalic.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureCheckBox(this.chkUnderline, "Underline", text, new Point(154, 28));
+            this.chkUnderline.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureCheckBox(this.chkStrike, "Strike", text, new Point(258, 28));
+            this.chkStrike.CheckedChanged += new System.EventHandler(this.UI_Changed);
 
-            this.lblTrans.Location = new System.Drawing.Point(380, 30); this.lblTrans.Text = "Alpha:"; this.lblTrans.AutoSize = true;
-            this.trkTransparency.Location = new System.Drawing.Point(430, 25); this.trkTransparency.Size = new System.Drawing.Size(150, 45); this.trkTransparency.Maximum = 255; this.trkTransparency.TickStyle = System.Windows.Forms.TickStyle.None; this.trkTransparency.Scroll += new System.EventHandler(this.trkTransparency_Scroll);
-            this.lblTransVal.Location = new System.Drawing.Point(590, 30); this.lblTransVal.Text = "0%"; this.lblTransVal.AutoSize = true;
+            ConfigureLabel(this.lblTrans, "Alpha", muted, new Point(382, 29));
+            this.trkTransparency.BackColor = card;
+            this.trkTransparency.Location = new Point(430, 23);
+            this.trkTransparency.Maximum = 255;
+            this.trkTransparency.Size = new Size(152, 45);
+            this.trkTransparency.TickStyle = TickStyle.None;
+            this.trkTransparency.Scroll += new System.EventHandler(this.trkTransparency_Scroll);
+            ConfigureLabel(this.lblTransVal, "0%", text, new Point(598, 29));
 
-            this.chkShadow.Location = new System.Drawing.Point(20, 70); this.chkShadow.Text = "Shadow"; this.chkShadow.AutoSize = true; this.chkShadow.Checked = true; this.chkShadow.CheckedChanged += new System.EventHandler(this.UI_Changed);
-            this.lblSdw.Location = new System.Drawing.Point(100, 72); this.lblSdw.Text = "Width:"; this.lblSdw.AutoSize = true;
-            this.numShadowWidth.Location = new System.Drawing.Point(150, 70); this.numShadowWidth.Value = 1; this.numShadowWidth.ValueChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureCheckBox(this.chkShadow, "Shadow", text, new Point(18, 72));
+            this.chkShadow.Checked = true;
+            this.chkShadow.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureLabel(this.lblSdw, "Width", muted, new Point(106, 74));
+            ConfigureNumeric(this.numShadowWidth, field, text, new Point(154, 70), new Size(62, 24));
+            this.numShadowWidth.Value = 1;
+            this.numShadowWidth.ValueChanged += new System.EventHandler(this.UI_Changed);
 
-            this.chkBorder.Location = new System.Drawing.Point(20, 110); this.chkBorder.Text = "Border"; this.chkBorder.AutoSize = true; this.chkBorder.Checked = true; this.chkBorder.CheckedChanged += new System.EventHandler(this.UI_Changed);
-            this.lblBrd.Location = new System.Drawing.Point(100, 112); this.lblBrd.Text = "Width:"; this.lblBrd.AutoSize = true;
-            this.numBorderWidth.Location = new System.Drawing.Point(150, 110); this.numBorderWidth.Value = 1; this.numBorderWidth.ValueChanged += new System.EventHandler(this.UI_Changed);
-            this.btnBorderColor.Location = new System.Drawing.Point(280, 108); this.btnBorderColor.Text = "Color"; this.btnBorderColor.Size = new System.Drawing.Size(60, 25); this.btnBorderColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnBorderColor.BackColor = System.Drawing.Color.Black; this.btnBorderColor.Click += new System.EventHandler(this.btnBorderColor_Click);
+            ConfigureCheckBox(this.chkBorder, "Border", text, new Point(258, 72));
+            this.chkBorder.Checked = true;
+            this.chkBorder.CheckedChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureLabel(this.lblBrd, "Width", muted, new Point(338, 74));
+            ConfigureNumeric(this.numBorderWidth, field, text, new Point(386, 70), new Size(62, 24));
+            this.numBorderWidth.Value = 1;
+            this.numBorderWidth.ValueChanged += new System.EventHandler(this.UI_Changed);
+            ConfigureButton(this.btnBorderColor, "Border Color", Color.Black, Color.White, border, new Point(474, 68), new Size(106, 28));
+            this.btnBorderColor.Click += new System.EventHandler(this.btnBorderColor_Click);
 
-            this.grpAdvanced.Controls.Add(this.chkBold); this.grpAdvanced.Controls.Add(this.chkItalic); this.grpAdvanced.Controls.Add(this.chkUnderline); this.grpAdvanced.Controls.Add(this.chkStrike);
-            this.grpAdvanced.Controls.Add(this.lblTrans); this.grpAdvanced.Controls.Add(this.trkTransparency); this.grpAdvanced.Controls.Add(this.lblTransVal);
-            this.grpAdvanced.Controls.Add(this.chkShadow); this.grpAdvanced.Controls.Add(this.lblSdw); this.grpAdvanced.Controls.Add(this.numShadowWidth);
-            this.grpAdvanced.Controls.Add(this.chkBorder); this.grpAdvanced.Controls.Add(this.lblBrd); this.grpAdvanced.Controls.Add(this.numBorderWidth); this.grpAdvanced.Controls.Add(this.btnBorderColor);
+            this.grpAdvanced.Controls.AddRange(new Control[] {
+                this.chkBold, this.chkItalic, this.chkUnderline, this.chkStrike,
+                this.lblTrans, this.trkTransparency, this.lblTransVal,
+                this.chkShadow, this.lblSdw, this.numShadowWidth,
+                this.chkBorder, this.lblBrd, this.numBorderWidth, this.btnBorderColor
+            });
 
-            y += 160; // 535
-            this.lblPreview.AutoSize = true; this.lblPreview.Location = new System.Drawing.Point(20, y); this.lblPreview.Text = "Preview:";
+            this.pnlStyle.Controls.AddRange(new Control[] {
+                this.lblHeader3, this.lblFont, this.cmbFontName, this.lblSize, this.numFontSize,
+                this.lblColor, this.btnFontColor, this.lblMargin, this.numMarginV, this.grpAdvanced
+            });
 
-            y += 25; // 560
-            this.picPreview.Location = new System.Drawing.Point(20, y); this.picPreview.Size = new System.Drawing.Size(640, 150);
+            // PREVIEW CARD
+            ConfigureCard(this.pnlPreview, card, border, new Point(20, 520), new Size(780, 120));
+            ConfigureSectionHeader(this.lblPreview, "Preview", accentGreen, new Point(18, 12));
 
-            y += 160; // 720
-            this.btnConvert.Location = new System.Drawing.Point(20, y);
-            this.btnConvert.Size = new System.Drawing.Size(640, 50);
-            this.btnConvert.Text = "START CONVERSION";
-            this.btnConvert.BackColor = System.Drawing.Color.FromArgb(0, 122, 204);
-            this.btnConvert.ForeColor = System.Drawing.Color.White;
-            this.btnConvert.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.btnConvert.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.picPreview.BackColor = Color.FromArgb(31, 41, 55);
+            this.picPreview.Location = new Point(18, 38);
+            this.picPreview.Size = new Size(738, 66);
+            this.picPreview.SizeMode = PictureBoxSizeMode.StretchImage;
+
+            this.pnlPreview.Controls.AddRange(new Control[] { this.lblPreview, this.picPreview });
+
+            // ACTIONS AND STATUS
+            ConfigureButton(this.btnConvert, "START CONVERSION", accent, Color.White, accent, new Point(20, 652), new Size(780, 36));
+            this.btnConvert.Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold, GraphicsUnit.Point);
             this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
 
-            y += 60; // 780
-            this.lblProgress.AutoSize = true; this.lblProgress.Location = new System.Drawing.Point(20, y); this.lblProgress.Text = "Ready";
+            this.lblProgress.AutoSize = true;
+            this.lblProgress.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblProgress.ForeColor = text;
+            this.lblProgress.Location = new Point(20, 696);
+            this.lblProgress.Text = "Ready";
 
-            y += 25; // 805
-            this.progressBar.Location = new System.Drawing.Point(20, y); this.progressBar.Size = new System.Drawing.Size(640, 20);
+            this.progressBar.Location = new Point(84, 697);
+            this.progressBar.Size = new Size(250, 14);
+            this.progressBar.Style = ProgressBarStyle.Continuous;
 
-            y += 30; // 835
-            this.txtLog.Location = new System.Drawing.Point(20, y); this.txtLog.Size = new System.Drawing.Size(640, 80); this.txtLog.BackColor = System.Drawing.Color.Black; this.txtLog.ForeColor = System.Drawing.Color.Lime;
+            this.txtLog.BackColor = Color.FromArgb(2, 6, 23);
+            this.txtLog.BorderStyle = BorderStyle.None;
+            this.txtLog.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            this.txtLog.ForeColor = Color.FromArgb(134, 239, 172);
+            this.txtLog.Location = new Point(352, 692);
+            this.txtLog.Size = new Size(448, 20);
 
             // Form Controls
-            this.Controls.Add(this.grpAdvanced);
-            this.Controls.Add(this.txtLog);
-            this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.lblProgress);
+            this.Controls.Add(this.lblAppTitle);
+            this.Controls.Add(this.lblAppSubtitle);
+            this.Controls.Add(this.pnlSource);
+            this.Controls.Add(this.pnlConversion);
+            this.Controls.Add(this.pnlStyle);
+            this.Controls.Add(this.pnlPreview);
             this.Controls.Add(this.btnConvert);
-            this.Controls.Add(this.picPreview);
-            this.Controls.Add(this.lblPreview);
-            this.Controls.Add(this.numMarginV);
-            this.Controls.Add(this.lblMargin);
-            this.Controls.Add(this.btnFontColor);
-            this.Controls.Add(this.lblColor);
-            this.Controls.Add(this.numFontSize);
-            this.Controls.Add(this.lblSize);
-            this.Controls.Add(this.cmbFontName);
-            this.Controls.Add(this.lblFont);
-            this.Controls.Add(this.lblHeader3);
-            this.Controls.Add(this.chkUltrafast);
-            this.Controls.Add(this.cmbFormat);
-            this.Controls.Add(this.lblFormat);
-            this.Controls.Add(this.cmbHardware);
-            this.Controls.Add(this.lblHardware);
-            this.Controls.Add(this.lblHeader2);
-            this.Controls.Add(this.btnBrowseOutput);
-            this.Controls.Add(this.txtOutput);
-            this.Controls.Add(this.lblOutput);
-            this.Controls.Add(this.btnBrowseSub);
-            this.Controls.Add(this.txtSubtitle);
-            this.Controls.Add(this.lblSubtitle);
-            this.Controls.Add(this.btnBrowseInput);
-            this.Controls.Add(this.txtInput);
-            this.Controls.Add(this.lblVideo);
-            this.Controls.Add(this.lblHeader1);
+            this.Controls.Add(this.lblProgress);
+            this.Controls.Add(this.progressBar);
+            this.Controls.Add(this.txtLog);
 
             ((System.ComponentModel.ISupportInitialize)(this.numFontSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMarginV)).EndInit();
@@ -241,54 +298,145 @@ namespace VideoToolsDesktop
             this.PerformLayout();
         }
 
+        private static void ConfigureCard(RoundedPanel panel, Color backColor, Color borderColor, Point location, Size size)
+        {
+            panel.BackColor = backColor;
+            panel.BorderColor = borderColor;
+            panel.BorderWidth = 1;
+            panel.CornerRadius = 8;
+            panel.Location = location;
+            panel.Size = size;
+        }
+
+        private static void ConfigureSectionHeader(Label label, string text, Color color, Point location)
+        {
+            label.AutoSize = true;
+            label.Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            label.ForeColor = color;
+            label.Location = location;
+            label.Text = text;
+        }
+
+        private static void ConfigureLabel(Label label, string text, Color color, Point location)
+        {
+            label.AutoSize = true;
+            label.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            label.ForeColor = color;
+            label.Location = location;
+            label.Text = text;
+        }
+
+        private static void ConfigureTextBox(TextBox textBox, Color backColor, Color foreColor, Color borderColor, Point location, Size size)
+        {
+            textBox.BackColor = backColor;
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            textBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox.ForeColor = foreColor;
+            textBox.Location = location;
+            textBox.Size = size;
+        }
+
+        private static void ConfigureCombo(ComboBox comboBox, Color backColor, Color foreColor, Point location, Size size)
+        {
+            comboBox.BackColor = backColor;
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox.FlatStyle = FlatStyle.Flat;
+            comboBox.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            comboBox.ForeColor = foreColor;
+            comboBox.Location = location;
+            comboBox.Size = size;
+        }
+
+        private static void ConfigureNumeric(NumericUpDown numeric, Color backColor, Color foreColor, Point location, Size size)
+        {
+            numeric.BackColor = backColor;
+            numeric.BorderStyle = BorderStyle.FixedSingle;
+            numeric.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            numeric.ForeColor = foreColor;
+            numeric.Location = location;
+            numeric.Size = size;
+        }
+
+        private static void ConfigureCheckBox(CheckBox checkBox, string text, Color foreColor, Point location)
+        {
+            checkBox.AutoSize = true;
+            checkBox.FlatStyle = FlatStyle.Flat;
+            checkBox.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular, GraphicsUnit.Point);
+            checkBox.ForeColor = foreColor;
+            checkBox.Location = location;
+            checkBox.Text = text;
+            checkBox.UseVisualStyleBackColor = true;
+        }
+
+        private static void ConfigureButton(Button button, string text, Color backColor, Color foreColor, Color borderColor, Point location, Size size)
+        {
+            button.BackColor = backColor;
+            button.Cursor = Cursors.Hand;
+            button.FlatAppearance.BorderColor = borderColor;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatStyle = FlatStyle.Flat;
+            button.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold, GraphicsUnit.Point);
+            button.ForeColor = foreColor;
+            button.Location = location;
+            button.Size = size;
+            button.Text = text;
+            button.UseVisualStyleBackColor = false;
+        }
+
         #endregion
 
-        private System.Windows.Forms.Label lblHeader1;
-        private System.Windows.Forms.Label lblVideo;
-        private System.Windows.Forms.TextBox txtInput;
-        private System.Windows.Forms.Button btnBrowseInput;
-        private System.Windows.Forms.Label lblSubtitle;
-        private System.Windows.Forms.TextBox txtSubtitle;
-        private System.Windows.Forms.Button btnBrowseSub;
-        private System.Windows.Forms.Label lblOutput;
-        private System.Windows.Forms.TextBox txtOutput;
-        private System.Windows.Forms.Button btnBrowseOutput;
-        private System.Windows.Forms.Label lblHeader2;
-        private System.Windows.Forms.Label lblHardware;
-        private System.Windows.Forms.ComboBox cmbHardware;
-        private System.Windows.Forms.Label lblFormat;
-        private System.Windows.Forms.ComboBox cmbFormat;
-        private System.Windows.Forms.CheckBox chkUltrafast;
-        private System.Windows.Forms.Label lblHeader3;
-        private System.Windows.Forms.Label lblFont;
-        private System.Windows.Forms.ComboBox cmbFontName;
-        private System.Windows.Forms.Label lblSize;
-        private System.Windows.Forms.NumericUpDown numFontSize;
-        private System.Windows.Forms.Label lblColor;
-        private System.Windows.Forms.Button btnFontColor;
-        private System.Windows.Forms.Label lblMargin;
-        private System.Windows.Forms.NumericUpDown numMarginV;
-        private System.Windows.Forms.Label lblPreview;
-        private System.Windows.Forms.PictureBox picPreview;
-        private System.Windows.Forms.Button btnConvert;
-        private System.Windows.Forms.Label lblProgress;
-        private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.RichTextBox txtLog;
+        private Label lblAppTitle;
+        private Label lblAppSubtitle;
+        private RoundedPanel pnlSource;
+        private RoundedPanel pnlConversion;
+        private RoundedPanel pnlStyle;
+        private RoundedPanel pnlPreview;
+        private Label lblHeader1;
+        private Label lblVideo;
+        private TextBox txtInput;
+        private Button btnBrowseInput;
+        private Label lblSubtitle;
+        private TextBox txtSubtitle;
+        private Button btnBrowseSub;
+        private Label lblOutput;
+        private TextBox txtOutput;
+        private Button btnBrowseOutput;
+        private Label lblHeader2;
+        private Label lblHardware;
+        private ComboBox cmbHardware;
+        private Label lblFormat;
+        private ComboBox cmbFormat;
+        private CheckBox chkUltrafast;
+        private Label lblHeader3;
+        private Label lblFont;
+        private ComboBox cmbFontName;
+        private Label lblSize;
+        private NumericUpDown numFontSize;
+        private Label lblColor;
+        private Button btnFontColor;
+        private Label lblMargin;
+        private NumericUpDown numMarginV;
+        private Label lblPreview;
+        private PictureBox picPreview;
+        private Button btnConvert;
+        private Label lblProgress;
+        private ProgressBar progressBar;
+        private RichTextBox txtLog;
 
-        private System.Windows.Forms.GroupBox grpAdvanced;
-        private System.Windows.Forms.CheckBox chkBold;
-        private System.Windows.Forms.CheckBox chkItalic;
-        private System.Windows.Forms.CheckBox chkUnderline;
-        private System.Windows.Forms.CheckBox chkStrike;
-        private System.Windows.Forms.Label lblTrans;
-        private System.Windows.Forms.TrackBar trkTransparency;
-        private System.Windows.Forms.Label lblTransVal;
-        private System.Windows.Forms.CheckBox chkShadow;
-        private System.Windows.Forms.Label lblSdw;
-        private System.Windows.Forms.NumericUpDown numShadowWidth;
-        private System.Windows.Forms.CheckBox chkBorder;
-        private System.Windows.Forms.Label lblBrd;
-        private System.Windows.Forms.NumericUpDown numBorderWidth;
-        private System.Windows.Forms.Button btnBorderColor;
+        private GroupBox grpAdvanced;
+        private CheckBox chkBold;
+        private CheckBox chkItalic;
+        private CheckBox chkUnderline;
+        private CheckBox chkStrike;
+        private Label lblTrans;
+        private TrackBar trkTransparency;
+        private Label lblTransVal;
+        private CheckBox chkShadow;
+        private Label lblSdw;
+        private NumericUpDown numShadowWidth;
+        private CheckBox chkBorder;
+        private Label lblBrd;
+        private NumericUpDown numBorderWidth;
+        private Button btnBorderColor;
     }
 }
