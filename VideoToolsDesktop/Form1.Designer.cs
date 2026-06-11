@@ -92,13 +92,13 @@ namespace VideoToolsDesktop
             Color accentGreen = Color.FromArgb(34, 197, 94);
 
             // FORM
-            this.AutoScaleDimensions = new SizeF(7F, 15F);
-            this.AutoScaleMode = AutoScaleMode.Font;
+            this.AutoScaleDimensions = new SizeF(96F, 96F);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = page;
-            this.ClientSize = new Size(820, 690);
+            this.ClientSize = new Size(820, 716);
             this.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.ForeColor = text;
-            this.MinimumSize = new Size(760, 650);
+            this.MinimumSize = new Size(760, 676);
             this.Name = "Form1";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Video Tools Desktop";

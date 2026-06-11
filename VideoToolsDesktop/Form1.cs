@@ -24,6 +24,7 @@ namespace VideoToolsDesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            FitToScreen();
             LoadSettingsAndApply();
 
             this.FormClosing += Form1_FormClosing;
@@ -36,6 +37,19 @@ namespace VideoToolsDesktop
 
             isLoaded = true;
             UpdatePreview();
+        }
+
+        // If the scaled window is taller than the screen, shrink it and let the form scroll
+        private void FitToScreen()
+        {
+            Rectangle workArea = Screen.FromControl(this).WorkingArea;
+            if (this.Height > workArea.Height)
+            {
+                this.AutoScroll = true;
+                this.MinimumSize = new Size(this.MinimumSize.Width, 0);
+                this.Height = workArea.Height;
+                this.Top = workArea.Top;
+            }
         }
 
         private void LoadSettingsAndApply()
