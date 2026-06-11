@@ -25,17 +25,20 @@ namespace VideoToolsDesktop
         private void Form1_Load(object sender, EventArgs e)
         {
             FitToScreen();
+            LayoutStatusControls();
             LoadSettingsAndApply();
 
             this.FormClosing += Form1_FormClosing;
+            this.Resize += (s, ev) => LayoutStatusControls();
             cmbHardware.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             cmbFormat.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             chkUltrafast.CheckedChanged += (s, ev) => SaveCurrentSettings();
             txtInput.TextChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
-            txtSubtitle.TextChanged += (s, ev) => SaveCurrentSettings();
+            txtSubtitle.TextChanged += (s, ev) => { SaveCurrentSettings(); UpdateSubtitleModeUI(); UpdatePreview(); };
             txtOutput.TextChanged += (s, ev) => SaveCurrentSettings();
 
             isLoaded = true;
+            UpdateSubtitleModeUI();
             UpdatePreview();
         }
 
@@ -153,6 +156,15 @@ namespace VideoToolsDesktop
             return string.Empty;
         }
 
+        // .sup (PGS) holds pre-rendered bitmaps; styling cannot apply to it
+        private bool IsBitmapSubtitle()
+            => string.Equals(Path.GetExtension(txtSubtitle.Text), ".sup", StringComparison.OrdinalIgnoreCase);
+
+        private void UpdateSubtitleModeUI()
+        {
+            pnlStyle.Enabled = !IsBitmapSubtitle();
+        }
+
         private void UpdatePreview()
         {
             if (picPreview.Image != null) picPreview.Image.Dispose();
@@ -175,6 +187,18 @@ namespace VideoToolsDesktop
                 using Brush labelBrush = new SolidBrush(Color.FromArgb(148, 163, 184));
                 using Font labelFont = new Font("Segoe UI Semibold", 8F, FontStyle.Bold);
                 g.DrawString("PREVIEW", labelFont, labelBrush, 12, 10);
+
+                if (IsBitmapSubtitle())
+                {
+                    string note = "Bitmap subtitle (.sup) — styling not applicable";
+                    using Font noteFont = new Font("Segoe UI", 11F, FontStyle.Italic);
+                    SizeF noteSize = g.MeasureString(note, noteFont);
+                    g.DrawString(note, noteFont, labelBrush,
+                        Math.Max(16, (picPreview.Width - noteSize.Width) / 2),
+                        (picPreview.Height - noteSize.Height) / 2);
+                    picPreview.Image = bmp;
+                    return;
+                }
 
                 string sampleText = "This is a sample subtitle text 123";
                 string fontName = cmbFontName.SelectedItem?.ToString() ?? "Arial";
@@ -234,7 +258,7 @@ namespace VideoToolsDesktop
             => $"&H{alphaVal:X2}{c.B:X2}{c.G:X2}{c.R:X2}";
 
         private void btnBrowseInput_Click(object sender, EventArgs e) => BrowseFile(txtInput, "Video Files|*.mkv;*.mp4;*.avi;*.mov|All Files|*.*");
-        private void btnBrowseSub_Click(object sender, EventArgs e) => BrowseFile(txtSubtitle, "Subtitle Files|*.srt|All Files|*.*");
+        private void btnBrowseSub_Click(object sender, EventArgs e) => BrowseFile(txtSubtitle, "Subtitle Files|*.srt;*.sup|All Files|*.*");
 
         private void btnBrowseOutput_Click(object sender, EventArgs e)
         {
@@ -309,9 +333,26 @@ namespace VideoToolsDesktop
         private void Log(string msg)
         {
             if (this.InvokeRequired) { this.Invoke(new Action<string>(Log), msg); return; }
-            txtLog.AppendText(msg + Environment.NewLine);
+            if (txtLog.TextLength > 0)
+                txtLog.AppendText(Environment.NewLine);
+            txtLog.AppendText(msg);
             txtLog.ScrollToCaret();
             ParseProgress(msg);
+        }
+
+        private void LayoutStatusControls()
+        {
+            const int gap = 12;
+            int contentRight = ClientSize.Width - btnConvert.Left;
+
+            btnConvert.Width = Math.Max(100, contentRight - btnConvert.Left);
+
+            int logLeft = btnConvert.Left + (int)(btnConvert.Width * 0.43);
+            txtLog.Left = logLeft;
+            txtLog.Width = Math.Max(100, contentRight - logLeft);
+
+            progressBar.Left = lblProgress.Right + 8;
+            progressBar.Width = Math.Max(40, txtLog.Left - gap - progressBar.Left);
         }
 
         private void ParseProgress(string line)
@@ -331,6 +372,7 @@ namespace VideoToolsDesktop
                     double pct = Math.Min((current.TotalSeconds / totalDuration.TotalSeconds) * 100, 100);
                     progressBar.Value = (int)pct;
                     lblProgress.Text = $"Progress: {pct:F1}%";
+                    LayoutStatusControls();
                 }
             }
         }
@@ -371,8 +413,17 @@ namespace VideoToolsDesktop
 
             string? tempSubFile = null;
             string args = $"-i \"{inputFile}\" -sn ";
+            string mapping = "-map 0:v:0 -map 0:a ";
+            bool hasSubFile = File.Exists(txtSubtitle.Text);
 
-            if (File.Exists(txtSubtitle.Text))
+            if (hasSubFile && IsBitmapSubtitle())
+            {
+                // PGS bitmaps: overlay as second input; scale2ref matches sub canvas to video resolution
+                args = $"-i \"{inputFile}\" -i \"{txtSubtitle.Text}\" -sn ";
+                args += "-filter_complex \"[1:s][0:v]scale2ref[s][v];[v][s]overlay[outv]\" ";
+                mapping = "-map \"[outv]\" -map 0:a ";
+            }
+            else if (hasSubFile)
             {
                 string tempDir = Path.Combine(Path.GetTempPath(), "VideoToolsDesktop");
                 Directory.CreateDirectory(tempDir);
@@ -402,7 +453,7 @@ namespace VideoToolsDesktop
                 args += $"-vf \"subtitles='{safeName}':force_style='{style}'\" ";
             }
 
-            args += "-c:a copy -map 0:v:0 -map 0:a ";
+            args += "-c:a copy " + mapping;
 
             if (cmbHardware.Text.Contains("NVIDIA"))
             {
