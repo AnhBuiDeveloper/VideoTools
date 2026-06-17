@@ -262,9 +262,29 @@ namespace VideoToolsDesktop
 
         private void Form1_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            if (currentProcess != null && !currentProcess.HasExited)
+            StopCurrentProcess();
+        }
+
+        private void StopCurrentProcess()
+        {
+            Process? process = currentProcess;
+            if (process == null) return;
+
+            try
             {
-                try { currentProcess.Kill(); } catch { }
+                if (!process.HasExited)
+                    process.Kill();
+            }
+            catch (InvalidOperationException)
+            {
+                // Process has already exited or the Process object is no longer associated with it.
+            }
+            catch
+            {
+            }
+            finally
+            {
+                currentProcess = null;
             }
         }
 
@@ -372,7 +392,8 @@ namespace VideoToolsDesktop
         {
             if (isConverting)
             {
-                try { currentProcess?.Kill(); Log("Stopped."); } catch { }
+                StopCurrentProcess();
+                Log("Stopped.");
                 isConverting = false;
                 btnConvert.Text = "START CONVERSION";
                 btnConvert.BackColor = Color.FromArgb(14, 165, 233);
@@ -519,6 +540,7 @@ namespace VideoToolsDesktop
                                 MessageBox.Show($"FFmpeg exited with code {p.ExitCode}.\nCheck the log for details.", "Conversion Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         isConverting = false;
+                        currentProcess = null;
                         btnConvert.Text = "START CONVERSION";
                         btnConvert.BackColor = Color.FromArgb(14, 165, 233);
                     }));
