@@ -95,10 +95,11 @@ namespace VideoToolsDesktop
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = page;
-            this.ClientSize = new Size(820, 716);
+            this.ClientSize = new Size(820, 736);
             this.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.ForeColor = text;
-            this.MinimumSize = new Size(760, 676);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Video Tools Desktop";
@@ -260,19 +261,22 @@ namespace VideoToolsDesktop
             this.lblProgress.AutoSize = true;
             this.lblProgress.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblProgress.ForeColor = text;
-            this.lblProgress.Location = new Point(20, 696);
+            this.lblProgress.Location = new Point(20, 700);
             this.lblProgress.Text = "Ready";
 
-            this.progressBar.Location = new Point(84, 697);
-            this.progressBar.Size = new Size(250, 14);
+            this.progressBar.Location = new Point(84, 701);
+            this.progressBar.Size = new Size(250, 16);
             this.progressBar.Style = ProgressBarStyle.Continuous;
 
             this.txtLog.BackColor = Color.FromArgb(2, 6, 23);
             this.txtLog.BorderStyle = BorderStyle.None;
+            this.txtLog.DetectUrls = false;
             this.txtLog.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtLog.ForeColor = Color.FromArgb(134, 239, 172);
-            this.txtLog.Location = new Point(352, 692);
-            this.txtLog.Size = new Size(448, 20);
+            this.txtLog.Location = new Point(352, 696);
+            this.txtLog.ScrollBars = RichTextBoxScrollBars.None;
+            this.txtLog.Size = new Size(448, 26);
+            this.txtLog.WordWrap = false;
 
             // Form Controls
             this.Controls.Add(this.lblAppTitle);

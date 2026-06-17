@@ -24,12 +24,10 @@ namespace VideoToolsDesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            FitToScreen();
             LayoutStatusControls();
             LoadSettingsAndApply();
 
             this.FormClosing += Form1_FormClosing;
-            this.Resize += (s, ev) => LayoutStatusControls();
             cmbHardware.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             cmbFormat.SelectedIndexChanged += (s, ev) => { SaveCurrentSettings(); AutoSetOutputPath(); };
             chkUltrafast.CheckedChanged += (s, ev) => SaveCurrentSettings();
@@ -40,19 +38,6 @@ namespace VideoToolsDesktop
             isLoaded = true;
             UpdateSubtitleModeUI();
             UpdatePreview();
-        }
-
-        // If the scaled window is taller than the screen, shrink it and let the form scroll
-        private void FitToScreen()
-        {
-            Rectangle workArea = Screen.FromControl(this).WorkingArea;
-            if (this.Height > workArea.Height)
-            {
-                this.AutoScroll = true;
-                this.MinimumSize = new Size(this.MinimumSize.Width, 0);
-                this.Height = workArea.Height;
-                this.Top = workArea.Top;
-            }
         }
 
         private void LoadSettingsAndApply()
@@ -370,11 +355,17 @@ namespace VideoToolsDesktop
                 {
                     TimeSpan current = new TimeSpan(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value));
                     double pct = Math.Min((current.TotalSeconds / totalDuration.TotalSeconds) * 100, 100);
-                    progressBar.Value = (int)pct;
-                    lblProgress.Text = $"Progress: {pct:F1}%";
-                    LayoutStatusControls();
+                    SetProgress(pct);
                 }
             }
+        }
+
+        private void SetProgress(double pct)
+        {
+            pct = Math.Clamp(pct, progressBar.Minimum, progressBar.Maximum);
+            progressBar.Value = (int)Math.Round(pct);
+            lblProgress.Text = $"Progress: {pct:F1}%";
+            LayoutStatusControls();
         }
 
         private async void btnConvert_Click(object sender, EventArgs e)
@@ -482,7 +473,8 @@ namespace VideoToolsDesktop
 
             args += $"\"{outputFile}\" -y";
 
-            progressBar.Value = 0;
+            totalDuration = TimeSpan.Zero;
+            SetProgress(0);
             txtLog.Clear();
             Log($"FFmpeg: {ffmpegPath}");
             Log($"Args: {args}");
@@ -519,7 +511,10 @@ namespace VideoToolsDesktop
                         if (isConverting)
                         {
                             if (p.ExitCode == 0)
+                            {
+                                SetProgress(100);
                                 MessageBox.Show($"Conversion complete!\n\nOutput: {outputFile}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
                             else
                                 MessageBox.Show($"FFmpeg exited with code {p.ExitCode}.\nCheck the log for details.", "Conversion Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
