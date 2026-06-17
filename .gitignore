@@ -33,3 +33,4 @@ VideoToolsDesktop/ffmpeg.exe
 *.appx
 msix_staging/
 publish/
+artifacts/
