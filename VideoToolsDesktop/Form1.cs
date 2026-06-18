@@ -40,6 +40,16 @@ namespace VideoToolsDesktop
             UpdatePreview();
         }
 
+        private void Form1_ClientSizeChanged(object sender, EventArgs e)
+        {
+            LayoutStatusControls();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            LayoutStatusControls();
+        }
+
         private void LoadSettingsAndApply()
         {
             var s = SettingsManager.Load();
@@ -347,17 +357,26 @@ namespace VideoToolsDesktop
 
         private void LayoutStatusControls()
         {
+            const int horizontalMargin = 20;
             const int gap = 12;
-            int contentRight = ClientSize.Width - btnConvert.Left;
+            const int minLogWidth = 260;
+            int contentWidth = Math.Max(100, ClientSize.Width - (horizontalMargin * 2));
+            int contentRight = horizontalMargin + contentWidth;
 
-            btnConvert.Width = Math.Max(100, contentRight - btnConvert.Left);
+            btnConvert.SetBounds(horizontalMargin, btnConvert.Top, contentWidth, btnConvert.Height);
 
-            int logLeft = btnConvert.Left + (int)(btnConvert.Width * 0.43);
-            txtLog.Left = logLeft;
-            txtLog.Width = Math.Max(100, contentRight - logLeft);
+            int statusTop = btnConvert.Bottom + 14;
+            lblProgress.Location = new Point(horizontalMargin, statusTop - 1);
+
+            int logLeft = horizontalMargin + Math.Max(360, (int)(contentWidth * 0.44));
+            if (contentRight - logLeft < minLogWidth)
+                logLeft = Math.Max(horizontalMargin, contentRight - minLogWidth);
 
             progressBar.Left = lblProgress.Right + 8;
-            progressBar.Width = Math.Max(40, txtLog.Left - gap - progressBar.Left);
+            progressBar.Top = statusTop + 3;
+            progressBar.Width = Math.Max(80, logLeft - gap - progressBar.Left);
+
+            txtLog.SetBounds(logLeft, statusTop - 5, Math.Max(minLogWidth, contentRight - logLeft), 28);
         }
 
         private void ParseProgress(string line)

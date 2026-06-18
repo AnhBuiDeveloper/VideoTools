@@ -95,15 +95,18 @@ namespace VideoToolsDesktop
             this.AutoScaleDimensions = new SizeF(96F, 96F);
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.BackColor = page;
-            this.ClientSize = new Size(820, 736);
+            this.ClientSize = new Size(820, 760);
             this.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             this.ForeColor = text;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
+            this.MinimumSize = new Size(836, 799);
             this.Name = "Form1";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Video Tools Desktop";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.ClientSizeChanged += new System.EventHandler(this.Form1_ClientSizeChanged);
 
             // APP HEADER
             this.lblAppTitle.AutoSize = true;
@@ -254,17 +257,17 @@ namespace VideoToolsDesktop
             this.pnlPreview.Controls.AddRange(new Control[] { this.lblPreview, this.picPreview });
 
             // ACTIONS AND STATUS
-            ConfigureButton(this.btnConvert, "START CONVERSION", accent, Color.White, accent, new Point(20, 652), new Size(780, 36));
+            ConfigureButton(this.btnConvert, "START CONVERSION", accent, Color.White, accent, new Point(20, 656), new Size(780, 36));
             this.btnConvert.Font = new Font("Segoe UI Semibold", 10.5F, FontStyle.Bold, GraphicsUnit.Point);
             this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
 
             this.lblProgress.AutoSize = true;
             this.lblProgress.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point);
             this.lblProgress.ForeColor = text;
-            this.lblProgress.Location = new Point(20, 700);
+            this.lblProgress.Location = new Point(20, 710);
             this.lblProgress.Text = "Ready";
 
-            this.progressBar.Location = new Point(84, 701);
+            this.progressBar.Location = new Point(84, 711);
             this.progressBar.Size = new Size(250, 16);
             this.progressBar.Style = ProgressBarStyle.Continuous;
 
@@ -273,7 +276,7 @@ namespace VideoToolsDesktop
             this.txtLog.DetectUrls = false;
             this.txtLog.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point);
             this.txtLog.ForeColor = Color.FromArgb(134, 239, 172);
-            this.txtLog.Location = new Point(352, 696);
+            this.txtLog.Location = new Point(352, 706);
             this.txtLog.ScrollBars = RichTextBoxScrollBars.None;
             this.txtLog.Size = new Size(448, 26);
             this.txtLog.WordWrap = false;
